@@ -1,3 +1,8 @@
+# Quit now, instead of running
+# TODO: Try @holman's defaults; Update this script.
+
+exit 0
+
 # Sets reasonable macOS defaults.
 #
 # Or, in other words, set shit how I like in macOS.
