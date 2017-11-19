@@ -6,11 +6,9 @@ set -e
 
 cd "$(dirname $0)"/..
 
-# TODO: Update the Brewfile and run through it here
-
 # Run Homebrew through the Brewfile
-# echo "› brew bundle"
-# brew bundle
+echo "› brew bundle"
+brew bundle
 
 # find the installers and run them iteratively
 find . -maxdepth 2 -name 'install.sh' -not -path '*.git*' | while read installer ; do sh -c "${installer}" ; done
