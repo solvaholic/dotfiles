@@ -57,12 +57,12 @@ directory_name() {
 # TODO: Fix or remove battery_status
 #   On linuxmint VM there's no /proc/sys/hw/model
 
-# battery_status() {
+battery_status() {
 #   if [[ $(sysctl -n hw.model) == *"Book"* ]]
 #   then
 #     $ZSH/bin/battery-status
 #   fi
-# }
+}
 
 export PROMPT=$'\n$(battery_status)in $(directory_name) $(git_dirty)$(need_push)\n› '
 set_prompt () {
