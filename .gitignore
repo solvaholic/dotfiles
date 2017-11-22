@@ -8,5 +8,9 @@ atom.symlink/storage
 atom.symlink/themes
 atom.symlink/blob-store
 atom.symlink/recovery
+atom.symlink/*.token
 
 git/gitconfig.local.symlink
+
+.DS_Store
+**/.DS_Store
