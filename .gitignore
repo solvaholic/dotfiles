@@ -9,6 +9,7 @@ atom.symlink/themes
 atom.symlink/blob-store
 atom.symlink/recovery
 atom.symlink/*.token
+atom.symlink/nohup.out
 
 git/gitconfig.local.symlink
 
