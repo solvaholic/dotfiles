@@ -47,22 +47,6 @@
   "linter-rubocop": {}
   "linter-ui-default":
     panelHeight: 301
-  nuclide:
-    "atom-ide-code-format":
-      formatOnType: false
-    "nuclide-flow": {}
-  "prettier-atom":
-    formatOnSaveOptions:
-      enabled: true
-  "release-notes":
-    viewedVersion: "0.89.0"
-  "spell-check":
-    grammars: [
-      "text.plain"
-      "source.gfm"
-      "text.git-commit"
-      "text.html.basic"
-    ]
   stylefmt:
     formatOnSave: true
   welcome:
