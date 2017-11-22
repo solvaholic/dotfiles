@@ -17,12 +17,6 @@
     ruby:
       default_beautifier: "Ruby Beautify"
   core:
-    telemetryConsent: "no"
-    themes: [
-      "atom-dark-ui"
-      "atom-dark-syntax"
-    ]
-    useProxySettingsWhenCallingApm: false
     disabledPackages: [
       "background-tips"
       "exception-reporting"
@@ -30,6 +24,12 @@
       "react"
       "linter-rubocop"
     ]
+    telemetryConsent: "no"
+    themes: [
+      "atom-dark-ui"
+      "atom-dark-syntax"
+    ]
+    useProxySettingsWhenCallingApm: false
   editor:
     showIndentGuide: true
     softWrapAtPreferredLineLength: true
