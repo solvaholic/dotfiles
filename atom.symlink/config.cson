@@ -35,7 +35,6 @@
     ]
   editor:
     fontFamily: "Menlo"
-    invisibles: {}
     showIndentGuide: true
     softWrapAtPreferredLineLength: true
   "go-plus":
