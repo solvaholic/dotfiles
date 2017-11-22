@@ -16,9 +16,6 @@
       beautify_on_save: true
     ruby:
       default_beautifier: "Ruby Beautify"
-  "autocomplete-modules":
-    babelPluginModuleResolver: true
-    webpack: true
   core:
     telemetryConsent: "no"
     themes: [
