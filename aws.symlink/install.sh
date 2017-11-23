@@ -8,7 +8,7 @@
 # - Run aws configure (or whatever).
 # - Stub/stage/link configs, templates, ???.
 # - Inventory visible stuff, prompt to set some defaults.
-#   (For example default availability zone or SSH key, default settings
+#   (For example default region or SSH key, default settings
 #   for new instances/buckets/whatever).
 # - (?) Inventory visible stuff, build data for prompts and completions.
 
