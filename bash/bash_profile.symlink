@@ -1,0 +1,21 @@
+# Use git-prompt.sh
+
+MY_PATH=$HOME/.dotfiles/bash/git-prompt.sh
+
+export GIT_PS1_SHOWDIRTYSTATE=Yes
+source $MY_PATH
+PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
+
+
+# Execute ~/.dotfiles/bash/functions
+
+MY_PATH=$HOME/.dotfiles/bash/functions
+
+if [ -f $MY_PATH ]; then source $MY_PATH; fi
+
+
+# Execute ~/.dotfiles/bash/profile.local
+
+MY_PATH=$HOME/.dotfiles/bash/profile.local
+
+if [ -f $MY_PATH ]; then source $MY_PATH; fi
