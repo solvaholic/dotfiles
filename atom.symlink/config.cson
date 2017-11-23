@@ -12,6 +12,7 @@
       disabled: true
     markdown:
       beautify_on_save: true
+    markdown: {}
     nginx:
       beautify_on_save: true
     ruby:
@@ -33,6 +34,7 @@
   editor:
     fontFamily: "Menlo"
     showIndentGuide: true
+    softWrap: true
     softWrapAtPreferredLineLength: true
   "go-plus":
     panel:
