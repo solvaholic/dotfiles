@@ -11,6 +11,10 @@
 #   (For example default availability zone or SSH key, default settings
 #   for new instances/buckets/whatever).
 # - (?) Inventory visible stuff, build data for prompts and completions.
+
 # - Install awscli bash/zsh completions.
+#   http://docs.aws.amazon.com/cli/latest/userguide/cli-command-completion.html
+#   BASH: complete -C $( which aws_completer ) aws
+#   ZSH?: source /usr/local/bin/aws_zsh_completer.sh
 
 exit 0
