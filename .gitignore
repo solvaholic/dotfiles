@@ -14,6 +14,8 @@ atom.symlink/nohup.out
 aws.symlink/config
 aws.symlink/credentials
 
+bash/profile.local
+
 git/gitconfig.local.symlink
 
 .DS_Store
