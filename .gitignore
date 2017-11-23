@@ -11,6 +11,8 @@ atom.symlink/recovery
 atom.symlink/*.token
 atom.symlink/nohup.out
 
+bash/profile.local
+
 git/gitconfig.local.symlink
 
 .DS_Store
