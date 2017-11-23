@@ -10,8 +10,6 @@
       disabled: true
     jsx:
       disabled: true
-    markdown:
-      beautify_on_save: true
     markdown: {}
     nginx:
       beautify_on_save: true
