@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Try to find out which OS we're using, and print its name.
+#
+# Output: MacOS, Linux, or idfkbro
+#
+
+if test "$(uname)" = "Darwin"
+then
+  MYOS='MacOS'
+elif test "$(expr substr $(uname -s) 1 5)" = "Linux"
+then
+  MYOS='Linux'
+else
+  MYOS="idfkbro"
+fi
+
+echo $MYOS
+
+exit 0
