@@ -6,5 +6,8 @@ set -e
 
 cd "$(dirname $0)"/..
 
-# find the installers and run them iteratively
-find . -maxdepth 2 -name 'install.sh' -not -path '*.git*' | while read installer ; do sh -c "${installer}" ; done
+# Run the basic installer for this OS.
+sh "os/install.sh"
+
+# find the installers and run them iteratively.
+find . -maxdepth 2 -name 'install.sh' -not -path './os/*' -not -path '*.git*' | while read installer; do sh "${installer}"; done
