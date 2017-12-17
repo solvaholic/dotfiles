@@ -5,15 +5,20 @@
 # Output: MacOS, Linux, or idfkbro
 #
 
-if test "$(uname)" = "Darwin"
-then
-  MYOS='MacOS'
-elif test "$(expr substr $(uname -s) 1 5)" = "Linux"
-then
-  MYOS='Linux'
-else
-  MYOS="idfkbro"
-fi
+case "$(uname)" in
+  *Linux)
+    MYOS='Linux'
+    ;;
+  Darwin)
+    MYOS='MacOS'
+    ;;
+  OpenBSD)
+    MYOS="OpenBSD"
+    ;;
+  *)
+    MYOS="idfkbro"
+    ;;
+esac
 
 echo $MYOS
 
