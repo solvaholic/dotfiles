@@ -1,3 +1,7 @@
+#!/bin/sh
+
+set -e
+
 # Install prerequisite packages
 sudo yum update -y
 sudo yum groupinstall 'Development Tools'

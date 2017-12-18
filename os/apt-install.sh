@@ -1,3 +1,7 @@
+#!/bin/sh
+
+set -e
+
 # Install prerequisite packages
 sudo apt update
 sudo apt upgrade -y

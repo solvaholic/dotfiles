@@ -1,3 +1,7 @@
+#!/bin/sh
+
+set -e
+
 # Install prerequisite packages
 # TODO: Make this work...
 
