@@ -2,7 +2,7 @@
 #
 # Try to find out which OS we're using, and print its name.
 #
-# Output: MacOS, Linux, or idfkbro
+# Output: MacOS, Linux, OpenBSD, or idfkbro
 #
 
 case "$(uname)" in
