@@ -26,4 +26,9 @@ case $MYOS in
   MacOS)
     sh "$(dirname $0)/mac-install.sh"
     ;;
+  OpenBSD)
+    sh "$(dirname $0)/obsd-install.sh"
+    ;;
+  *)
+    ;;
 esac
