@@ -37,6 +37,9 @@ while test $# -gt 0; do
 	shift
 done
 
+# Run script/bootstrap to add new changes.
+echo "> $ZSH/script/bootstrap"
+
 # Install and/or update software.
 echo "› $ZSH/script/install"
 $ZSH/script/install
