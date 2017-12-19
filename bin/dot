@@ -7,8 +7,7 @@
 
 set -e
 
-parentDirectory="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"
-dotfilesDirectory="$(cd "$( dirname "$parentDirectory" )" && pwd -P)"
+export ZSH="$HOME/.dotfiles"
 
 displayUsageAndExit() {
 	echo "dot -- dotfiles management"
@@ -27,7 +26,7 @@ while test $# -gt 0; do
 			displayUsageAndExit
 			;;
 		"-e"|"--edit")
-			exec "$EDITOR" "$dotfilesDirectory"
+			exec "$EDITOR" "$ZSH"
 			exit
 			;;
 		*)
@@ -38,18 +37,6 @@ while test $# -gt 0; do
 	shift
 done
 
-export ZSH=$HOME/.dotfiles
-
-# Set macOS defaults
-$ZSH/macos/set-defaults.sh
-
-# Install homebrew
-$ZSH/homebrew/install.sh 2>&1
-
-# Upgrade homebrew
-echo "› brew update"
-brew update
-
-# Install software
+# Install and/or update software.
 echo "› $ZSH/script/install"
 $ZSH/script/install
