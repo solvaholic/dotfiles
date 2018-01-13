@@ -39,7 +39,8 @@ done
 
 # Run script/bootstrap to add new changes.
 echo "> $ZSH/script/bootstrap"
+$ZSH/script/bootstrap
 
 # Install and/or update software.
-echo "› $ZSH/script/install"
+echo "> $ZSH/script/install"
 $ZSH/script/install
