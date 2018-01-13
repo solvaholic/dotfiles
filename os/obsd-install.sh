@@ -2,11 +2,16 @@
 
 set -e
 
-# Update packages
+# TODO: Install the default package list.
 
-# TODO: Install the default package list...
-
-# Probably `doas pkg_add <something>`
-echo "> os/obsd-install.sh    # Really not sure what to do yet..."
+# Update installed packages and check for available patches.
+# Thank you @nixcraft! https://www.cyberciti.biz/faq/howto-apply-updates-on-openbsd-operating-system/
+# TODO: Make sure /etc/installurl contains a valid path, handle when it doesn't.
+echo "> doas pkg_add -Uuv"
+doas pkg_add -Uuv
+echo " "
+# TODO: If patches are available then explain how to install them.
+echo "> doas syspatch -c"
+doas syspatch -c
 
 exit 0
