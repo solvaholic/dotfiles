@@ -45,6 +45,8 @@
     panelHeight: 301
   stylefmt:
     formatOnSave: true
+  "tree-view":
+    hideVcsIgnoredFiles: true
   welcome:
     showOnStartup: false
 ".js.jsx.react.source":
