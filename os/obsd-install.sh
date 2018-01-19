@@ -2,6 +2,8 @@
 
 set -e
 
+# TODO: Check to make sure we were run from script/install.
+
 # TODO: Install the default package list.
 
 # Update installed packages and check for available patches.

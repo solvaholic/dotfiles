@@ -2,6 +2,8 @@
 
 set -e
 
+# TODO: Check to make sure we were run from script/install.
+
 # Update packages
 echo "> apt update"
 sudo apt update

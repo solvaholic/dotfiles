@@ -2,6 +2,8 @@
 
 set -e
 
+# TODO: Check to make sure we were run from script/install.
+
 # Update packages
 echo "> yum update -y"
 sudo yum update -y
