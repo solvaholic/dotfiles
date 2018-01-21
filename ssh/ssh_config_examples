@@ -1,0 +1,31 @@
+# For more examples, see .dotfiles/ssh/ssh_config_examples
+
+# See also `man ssh_config` and
+# https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/
+# and
+# http://nerderati.com/2011/03/17/simplify-your-life-with-an-ssh-config-file/
+
+# For access to temporary AWS instances:
+Host ec2-*.amazonaws.com
+  User ec2-user
+  Port 22
+  IdentityFile ~/.ssh/ec2-instance-key
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+
+# To use a local short name, for example "wakka":
+Host wakka
+  HostName 192.168.0.3
+  IdentityFile ~/.ssh/id_rsa
+
+# To create a tunnel:
+Host tunnel
+  HostName your.host.foo.bar
+  IdentityFile ~/.ssh/id_rsa
+  LocalForward 9090 127.0.0.1:443
+  RequestTTY false
+
+# Catch-all to use generic creds for unknown hosts...
+Host *
+  User user
+  IdentityFile ~/.ssh/generic
