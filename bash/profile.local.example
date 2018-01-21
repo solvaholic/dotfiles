@@ -2,5 +2,3 @@
 export PATH=$PATH:~/bin
 
 # Set some defaults...
-export AWS_SSH_KEY=$HOME/.ssh/my-aws-key
-export GHE_SSH_KEY=$AWS_SSH_KEY
