@@ -1,21 +1,22 @@
+# Bash will source ~/.bash_profile early, if it exists. Use this to
+# configure your environment and load per-topic stuffs.
+
 # Use git-prompt.sh
+my_path="$HOME/.dotfiles/bash/git-prompt.sh"
+if [ -f "$my_path" ]; then
+  GIT_PS1_SHOWDIRTYSTATE=Yes
+  export GIT_PS1_SHOWDIRTYSTATE
+  . "$my_path"
+  PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
+fi
 
-MY_PATH=$HOME/.dotfiles/bash/git-prompt.sh
+# Source ~/.dotfiles/bash/functions
+my_path="$HOME/.dotfiles/bash/functions"
+if [ -f $my_path ]; then . $my_path; fi
 
-export GIT_PS1_SHOWDIRTYSTATE=Yes
-source $MY_PATH
-PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
-
-
-# Execute ~/.dotfiles/bash/functions
-
-MY_PATH=$HOME/.dotfiles/bash/functions
-
-if [ -f $MY_PATH ]; then source $MY_PATH; fi
-
+# Source ~/.dotfiles/*/aliases.zsh
+# TODO: Find or make a portable way to source aliases.
 
 # Execute ~/.dotfiles/bash/profile.local
-
-MY_PATH=$HOME/.dotfiles/bash/profile.local
-
-if [ -f $MY_PATH ]; then source $MY_PATH; fi
+my_path=$HOME/.dotfiles/bash/profile.local
+if [ -f $my_path ]; then . $my_path; fi
