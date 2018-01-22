@@ -46,7 +46,7 @@
   stylefmt:
     formatOnSave: true
   "tree-view":
-    hideVcsIgnoredFiles: true
+    hideVcsIgnoredFiles: false
   welcome:
     showOnStartup: false
 ".js.jsx.react.source":
