@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+
+#
+# TODO: git/setup is intended to be called from script/setup. If it's
+#       called directly then these `return` may fail ungracefully.
+#       Handle that.
+#
+
+#
+# Was `setup` called in a way we can get its path?
+#
+if [ -f "$0" ] && [ $( dirname "$0" ) ]; then
+  # $0 is a file and `dirname` succeeds, so we think Yes.
+  script_root="$( cd $( dirname "$0" ) && echo $PWD )"
+else
+  # $0 is not a file or `dirname` fails, so we think No.
+  script_root=
+  printf "\n[FAIL] git/setup: This script was called incorrectly. Unable to set \$script_root.\n\n"
+  return 1
+fi
+
+
+if [ ! -x "$DOTFILES_ROOT" ] && [ -z "$WHICHOS" ]; then
+  # $DOTFILES_ROOT is inaccessible or $WHICHOS is not set, so call
+  # dotfiles.sh to set some variables and define some functions.
+  if [ -x "$script_root/../dotfiles.sh" ]; then
+    . "$script_root/../dotfiles.sh"
+  else
+    printf "\n[FAIL] git/setup: Can't find 'dotfiles.sh'. Abort!\n\n"
+    exit 1
+  fi
+fi
+
+#
+# Create .gitconfig.local, if it doesn't exist.
+#
+if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
+
+  info 'git/setup: Setting up your local Git config...'
+
+  # If we're on MacOS then use 'osxkeychain'.
+  if [ "$WHICHOS" == "MacOS" ]; then
+    git_credential='osxkeychain'
+  # Otherwise use 'store'.
+  else
+    git_credential='store'
+  fi
+
+  user '[INPUT REQUIRED] What is your GitHub username?'
+  read -e git_username
+  user '[INPUT REQUIRED] What is your GitHub author name?'
+  read -e git_authorname
+
+  # user ' - What is your GitHub author email?'
+  # read -e git_authoremail
+  git_authoremail="$git_username@users.noreply.github.com"
+
+  sed -e "s/USERNAME/$git_username/g" -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" "$DOTFILES_ROOT/git/gitconfig.local.symlink.example" > "$DOTFILES_ROOT/git/gitconfig.local.symlink"
+
+  success 'git/setup: Finished!'
+  
+fi
