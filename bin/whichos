@@ -20,6 +20,4 @@ case "$(uname)" in
     ;;
 esac
 
-echo $MYOS
-
-exit 0
+echo "$MYOS"
