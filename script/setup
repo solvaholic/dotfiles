@@ -79,7 +79,7 @@ link_file () {
 
       # If $target is already a link to $source then then assume "[s]kip".
       if [ "$currentSrc" == "$source" ]; then
-        skip=true;
+        skip="true";
       else
 
         user "File already exists: $target ($(basename "$source")), what do you want to do?\n\
@@ -88,17 +88,17 @@ link_file () {
 
         case "$action" in
           o )
-            overwrite=true;;
+            overwrite="true";;
           O )
-            overwrite_all=true;;
+            overwrite_all="true";;
           b )
-            backup=true;;
+            backup="true";;
           B )
-            backup_all=true;;
+            backup_all="true";;
           s )
-            skip=true;;
+            skip="true";;
           S )
-            skip_all=true;;
+            skip_all="true";;
           * )
             ;;
         esac
@@ -131,7 +131,7 @@ link_file () {
 install_dotfiles () {
   info 'script/setup: Installing dotfiles...'
 
-  local overwrite_all=false backup_all=false skip_all=false
+  local overwrite_all="false" backup_all="false" skip_all="false"
 
   for source in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' ! -path '*.git*')
   do
@@ -145,3 +145,5 @@ install_dotfiles () {
   done
 
 }
+
+install_dotfiles
