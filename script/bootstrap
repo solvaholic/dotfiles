@@ -34,7 +34,7 @@ else
 fi
 
 #
-# Call dotfiles.sh some variables and define some functions.
+# Call dotfiles.sh to set some variables and define some functions.
 #
 if [ -x "$script_root/../dotfiles.sh" ]; then
   . "$script_root/../dotfiles.sh"
