@@ -43,4 +43,4 @@ $ZSH/script/bootstrap
 
 # Install and/or update software.
 echo "> $ZSH/script/install"
-$ZSH/script/install
+$ZSH/script/udpate
