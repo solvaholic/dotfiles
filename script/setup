@@ -7,9 +7,9 @@
 #
 # This will _not_ run the OS-specific `setup` script.
 #
-# - Symlink config files and directories in the right places.
 # - Call `../git/setup` to set my Git configuration.
 # - ???
+# - Symlink config files and directories in the right places.
 #
 
 set -o posix
@@ -158,11 +158,15 @@ install_dotfiles () {
 
 }
 
-install_dotfiles
-
+# Run our git/setup to create git/gitconfig.local.symlink
 if [ -x "$DOTFILES_ROOT/git/setup" ]; then
   info '$script_name: Running git/setup now...'
   "$DOTFILES_ROOT/git/setup"
 else
   user "$script_name: Can't find git/setup, or it's not executable."
 fi
+
+# What else do we need to do, before we install the dotfiles?
+
+# Install dotfiles.
+install_dotfiles
