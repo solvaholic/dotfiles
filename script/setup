@@ -12,6 +12,13 @@
 # - ???
 #
 
+set -o posix
+
+# TODO: Add debugging.
+
+script_name=script/setup
+# TODO: Set script_name programmatically.
+
 # Initialize the warnings counter.
 with_warnings=0
 
@@ -24,7 +31,7 @@ if [ -f "$0" ] && [ $( dirname "$0" ) ]; then
 else
   # $0 is not a file or `dirname` fails, so we think No.
   script_root=
-  printf "\n[FAIL] script/setup: This script was called incorrectly. Unable to set \$script_root.\n\n"
+  printf "\n[FAIL] $script_name: This script was called incorrectly. Unable to set \$script_root.\n\n"
   exit 1
 fi
 
@@ -34,7 +41,7 @@ fi
 if [ -x "$script_root/../dotfiles.sh" ]; then
   . "$script_root/../dotfiles.sh"
 else
-  printf "\n[FAIL] script/setup: Can't find 'dotfiles.sh'. Abort!\n\n"
+  printf "\n[FAIL] $script_name: Can't find 'dotfiles.sh'. Abort!\n\n"
   exit 1
 fi
 
@@ -55,19 +62,20 @@ link_file () {
 
   # Do $source and $target look like valid paths? If not then return 1.
   if [ ! -e "$source" ]; then
-    fail "script/setup: \$source '$source' doesn't exist!"
+    fail "$script_name: \$source '$source' doesn't exist!"
     return 1
   elif [ ! -d "$( dirname "$target" )" ]; then
-    fail "script/setup: \$target '$target' path is invalid!"
+    fail "$script_name: \$target '$target' path is invalid!"
     return 1
   fi
 
   # If the target already exists, then prompt the user for action.
-  if [ -f "$target" -o -d "$target" -o -L "$target" ]; then
+  if [ -e "$target" ]; then
 
     # link_file() inherits overwrite_all, backup_all, and skip_all
     # from the caller.
-    if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
+
+    if [ "$overwrite_all" = "false" ] && [ "$backup_all" = "false" ] && [ "$skip_all" = "false" ]
     then
 
       if [ -h "$target" ]; then
@@ -78,13 +86,17 @@ link_file () {
       fi
 
       # If $target is already a link to $source then then assume "[s]kip".
-      if [ "$currentSrc" == "$source" ]; then
+      if [ ! -z "$currentSrc" ] && [ "$currentSrc" = "$source" ]; then
         skip="true";
       else
 
-        user "File already exists: $target ($(basename "$source")), what do you want to do?\n\
-        [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
-        read -n 1 action
+        user "File already exists: $target ($(basename "$source"))"
+        user "What do you want to do?"
+
+        # TODO: Validate input here.
+
+        user "[s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
+        read action
 
         case "$action" in
           o )
@@ -111,25 +123,25 @@ link_file () {
     backup=${backup:-$backup_all}
     skip=${skip:-$skip_all}
 
-    if [ "$overwrite" == "true" ]; then
+    if [ "$overwrite" = "true" ]; then
       rm -rf "$target"
-      success "script/setup: Removed '$target'."
-    elif [ "$backup" == "true" ]; then
+      success "$script_name: Removed '$target'."
+    elif [ "$backup" = "true" ]; then
       mv "$target" "${target}.backup"
-      success "script/setup: Moved '$target' to '${target}.backup'."
-    elif [ "$skip" == "true" ]; then
-      success "script/setup: Skipped '$source'."
+      success "$script_name: Moved '$target' to '${target}.backup'."
+    elif [ "$skip" = "true" ]; then
+      success "$script_name: Skipped '$source'."
     fi
   fi
 
   if [ "$skip" != "true" ]; then
     ln -s "$source" "$target"
-    success "script/setup: Linked '$source' to '$target'."
+    success "$script_name: Linked '$source' to '$target'."
   fi
 }
 
 install_dotfiles () {
-  info 'script/setup: Installing dotfiles...'
+  info '$script_name: Installing dotfiles...'
 
   local overwrite_all="false" backup_all="false" skip_all="false"
 
