@@ -1,0 +1,76 @@
+#!/bin/sh
+#
+# Run `openbsd/setup` to set up OpenBSD in, or reset
+# it to, its initial state.
+#
+# This covers shell and desktop preferences.
+#
+# - Install default applications.
+# - Notify of non-default applications.
+# - Notify of non-default configurations, give the option to restore
+#   them to default, remove them, or leave them.
+#
+
+DOTFILES_DEBUG=1
+script_name=openbsd/setup
+
+# Initialize the warnings counter.
+with_warnings=0
+
+#
+# Make sure `setup` was called in a way we can get its path.
+#
+if [ -f "$0" ] && [ $( dirname "$0" ) ]; then
+  # $0 is a file and `dirname` succeeds, so we think Yes.
+  script_root="$( cd $( dirname "$0" ) && echo $PWD )"
+else
+  # $0 is not a file or `dirname` fails, so we think No.
+  script_root=
+  printf "\n[FAIL] $script_name: This script was called incorrectly. Unable to set \$script_root.\n\n"
+  exit 1
+fi
+
+#
+# Call dotfiles.sh to set some variables and define some functions.
+#
+if [ -x "$script_root/../dotfiles.sh" ]; then
+  . "$script_root/../dotfiles.sh"
+else
+  printf "\n[FAIL] $script_name: Can't find 'dotfiles.sh'. Abort!\n\n"
+  exit 1
+fi
+
+#
+# Install default applications.
+#
+if [ -r "$script_root/default-packages" ]; then
+  info "$script_name: Installing packages from openbsd/default-packages..."
+  doas pkg_add -vUl "$script_root/default-packages"
+else
+  user "$script_name: Can't find openbsd/default-packages, or it's not readable!"
+  with_warnings=$(( with_warnings+1 ))
+fi
+
+#
+# TODO: Check `pkg_info -m` against openbsd/default-packages and prompt
+# the user to reconcile differences.
+#
+
+#
+# TODO: Borrow link_file() and install_dotfiles() from script/setup
+# to make the functions that will check/replace a dotfile.
+#
+
+#
+# TODO: Anything we want to enable/disable or set up by default?
+#
+
+#
+# TODO: Move all these tail-end blurbs to dotfiles.sh.
+# All done!
+#
+if [ $with_warnings -eq 0 ]; then
+  success "$script_name: Finished!"
+else
+  success "$script_name: Finished, with $with_warnings warnings. Please resolve any '[ ?? ]' notices reported above."
+fi
