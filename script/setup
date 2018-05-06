@@ -12,8 +12,6 @@
 # - Symlink config files and directories in the right places.
 #
 
-set -o posix
-
 # TODO: Add debugging.
 
 script_name=script/setup
@@ -171,3 +169,10 @@ fi
 
 # Install dotfiles.
 install_dotfiles
+
+# Prompt to run $whichos/bootstrap, if it exists.
+if [ -e "$DOTFILES_ROOT/$whichos/bootstrap" ]; then
+  user "$script_name: Finished! You may wish to run '$whichos/setup' next."
+else
+  info "$script_name: Finished!"
+fi
