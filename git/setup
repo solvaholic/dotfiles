@@ -40,17 +40,21 @@ if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
   info 'git/setup: Setting up your local Git config...'
 
   # If we're on MacOS then use 'osxkeychain'.
-  if [ "$WHICHOS" == "MacOS" ]; then
+  if [ "$WHICHOS" = "MacOS" ]; then
     git_credential='osxkeychain'
   # Otherwise use 'store'.
   else
     git_credential='store'
   fi
 
-  user '[INPUT REQUIRED] What is your GitHub username?'
-  read -e git_username
-  user '[INPUT REQUIRED] What is your GitHub author name?'
-  read -e git_authorname
+  # TODO: Validate input here.
+
+  user 'What is your GitHub username?'
+  printf "     ==> "
+  read git_username
+  user 'What is your GitHub author name?'
+  printf "     ==> "
+  read git_authorname
 
   # user ' - What is your GitHub author email?'
   # read -e git_authoremail
@@ -59,5 +63,5 @@ if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
   sed -e "s/USERNAME/$git_username/g" -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" "$DOTFILES_ROOT/git/gitconfig.local.symlink.example" > "$DOTFILES_ROOT/git/gitconfig.local.symlink"
 
   success 'git/setup: Finished!'
-  
+
 fi
