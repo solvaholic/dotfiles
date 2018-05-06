@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 # Ensures dependencies are met for `dotfiles`. Currently:
 # - Am I cloned in the user's home directory?
@@ -6,18 +7,6 @@
 # - Ensure I have git.
 # - Ensure I have /bin/sh.
 #
-# Notice there's no '#!/bin/sh' up top? We want this to run OK in any
-# POSIX compliant shell. We'll check later for /bin/sh.
-#
-
-#
-# Either `set -o posix` or warn.
-#
-if [ $( set -o posix > /dev/null 2>&1 ) ]; then
-  set -o posix
-else
-  printf "\n[WARN] $script_name: Can't \`set -o posix\`! This may not work right.\n\n"
-fi
 
 DOTFILES_DEBUG=
 script_name=script/bootstrap
@@ -51,7 +40,7 @@ fi
 #
 # Am I cloned in the user's home directory?
 #
-if [ ! "$DOTFILES_ROOT" == "${DOTFILES_ROOT#$HOME}" ]; then
+if [ ! "$DOTFILES_ROOT" = "${DOTFILES_ROOT#$HOME}" ]; then
   # $HOME _is_ matched in $DOTFILES_ROOT, so Yes.
   info "$script_name: Dotfiles is cloned under '$DOTFILES_ROOT'."
 else
@@ -98,7 +87,7 @@ fi
 # Ensure I have /bin/sh
 # NOTE: This may not work in busybox, for example in Alpine Linux.
 #
-if [ "$( which sh )" == "/bin/sh" ] && [ -x "/bin/sh" ]; then
+if [ "$( which sh )" = "/bin/sh" ] && [ -x "/bin/sh" ]; then
   info "$script_name: Found \`/bin/sh\`."
 else
   fail "$script_name: Can't find \`/bin/sh\` or it's not executable!"
