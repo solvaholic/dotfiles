@@ -25,6 +25,12 @@ fail () {
   echo ''
 }
 
+debug () {
+  if [ ! -z "$DOTFILES_DEBUG" ] && [ ! $DOTFILES_DEBUG -eq 0 ]; then
+    printf "\r  [ \033[0;33m##\033[0m ] %s\n" "$1"
+  fi
+}
+
 # Set some configuration variables.
 
 #
@@ -48,6 +54,7 @@ fi
 #
 if [ -x "$DOTFILES_ROOT/bin/whichos" ]; then
   WHICHOS="$( $DOTFILES_ROOT/bin/whichos )"
+  whichos="$( echo $WHICHOS | tr '[A-Z]' '[a-z]' )"
 else
   WHICHOS=
   fail "dotfiles/dotfiles.sh: Can't find '$DOTFILES_ROOT/bin/whichos'. Unable to set \$WHICHOS."
