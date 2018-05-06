@@ -9,13 +9,18 @@
 # Notice there's no '#!/bin/sh' up top? We want this to run OK in any
 # POSIX compliant shell. We'll check later for /bin/sh.
 #
+
+#
 # Either `set -o posix` or warn.
 #
 if [ set -o posix ]; then
   set -o posix
 else
-  printf "\n[WARN] dotfiles/script/bootstrap: Can't \`set -o posix\`! This may not work right.\n\n"
+  printf "\n[WARN] $script_name: Can't \`set -o posix\`! This may not work right.\n\n"
 fi
+
+DOTFILES_DEBUG=
+script_name=script/bootstrap
 
 # Initialize the warnings counter.
 with_warnings=0
@@ -29,7 +34,7 @@ if [ -f "$0" ] && [ $( dirname "$0" ) ]; then
 else
   # $0 is not a file or `dirname` fails, so we think No.
   script_root=
-  printf "\n[FAIL] dotfiles/script/bootstrap: This script was called incorrectly. Unable to set \$script_root.\n\n"
+  printf "\n[FAIL] $script_name: This script was called incorrectly. Unable to set \$script_root.\n\n"
   exit 1
 fi
 
@@ -48,10 +53,10 @@ fi
 #
 if [ ! "$DOTFILES_ROOT" == "${DOTFILES_ROOT#$HOME}" ]; then
   # $HOME _is_ matched in $DOTFILES_ROOT, so Yes.
-  info "dotfiles/script/bootstrap: Dotfiles is cloned under '$DOTFILES_ROOT'."
+  info "$script_name: Dotfiles is cloned under '$DOTFILES_ROOT'."
 else
   # $HOME is _not_ matched in $DOTFILES_ROOT, so No.
-  user "dotfiles/script/bootstrap: Please clone dotfiles under your homedir, for example: '$HOME/.dotfiles'."
+  user "$script_name: Please clone dotfiles under your homedir, for example: '$HOME/.dotfiles'."
   with_warnings=$(( with_warnings+1 ))
 fi
 
@@ -59,9 +64,9 @@ fi
 # What OS am I running on? ($WHICHOS is set in `dotfiles.sh`)
 #
 if [ ! -z "$WHICHOS" ]; then
-  info "dotfiles/script/bootstrap: Detected operating system is '$WHICHOS'."
+  info "$script_name: Detected operating system is '$WHICHOS'."
 else
-  fail "dotfiles/script/bootstrap: Can't detect which operating system this is!"
+  fail "$script_name: Can't detect which operating system this is!"
   exit 1
 fi
 
@@ -71,10 +76,10 @@ fi
 #
 whichos="$( echo $WHICHOS | tr '[A-Z]' '[a-z]' )"
 if [ -x "$DOTFILES_ROOT/$whichos/bootstrap" ]; then
-  info "dotfiles/script/bootstrap: Running '$DOTFILES_ROOT/$whichos/bootstrap'..."
+  info "$script_name: Running '$DOTFILES_ROOT/$whichos/bootstrap'..."
   . "$DOTFILES_ROOT/$whichos/bootstrap"
 else
-  user "dotfiles/script/bootstrap: Bootstrap not found for $WHICHOS!"
+  user "$script_name: Bootstrap not found for $WHICHOS!"
   with_warnings=$(( with_warnings+1 ))
 fi
 
@@ -83,9 +88,9 @@ fi
 #
 if [ $( which git ) ]; then
   git_version="$( $( which git ) version )"
-  info "dotfiles/script/bootstrap: Found '$git_version'."
+  info "$script_name: Found '$git_version'."
 else
-  fail "dotfiles/script/bootstrap: Did not find \`git\`!"
+  fail "$script_name: Did not find \`git\`!"
   exit 1
 fi
 
@@ -94,9 +99,9 @@ fi
 # NOTE: This may not work in busybox, for example in Alpine Linux.
 #
 if [ "$( which sh )" == "/bin/sh" ] && [ -x "/bin/sh" ]; then
-  info "dotfiles/script/bootstrap: Found \`/bin/sh\`."
+  info "$script_name: Found \`/bin/sh\`."
 else
-  fail "dotfiles/script/bootstrap: Can't find \`/bin/sh\` or it's not executable!"
+  fail "$script_name: Can't find \`/bin/sh\` or it's not executable!"
   exit 1
 fi
 
@@ -104,9 +109,9 @@ fi
 # All done!
 #
 if [ $with_warnings -eq 0 ]; then
-  success "dotfiles/script/bootstrap: Finished!"
+  success "$script_name: Finished!"
 else
-  success "dotfiles/script/bootstrap: Finished, with $with_warnings warnings. Please resolve any '[ ?? ]' notices reported above."
+  success "$script_name: Finished, with $with_warnings warnings. Please resolve any '[ ?? ]' notices reported above."
 fi
 
 exit 0
