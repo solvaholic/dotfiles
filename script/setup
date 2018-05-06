@@ -145,16 +145,17 @@ install_dotfiles () {
 
   local overwrite_all="false" backup_all="false" skip_all="false"
 
+  # TODO: Fix this so it'll handle filenames that have spaces.
   for source in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' ! -path '*.git*')
   do
     target="$HOME/.$(basename "${source%.*}")"
     link_file "$source" "$target"
   done
 
-  find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' ! -path '*/.git/*' | while read line; do
-    target="$HOME/.$(basename "${source%.*}")"
-    link_file "$source" "$target"
-  done
+  # find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' ! -path '*/.git/*' | while read line; do
+  #   target="$HOME/.$(basename "${line%.*}")"
+  #   link_file "$source" "$target"
+  # done
 
 }
 
