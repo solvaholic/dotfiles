@@ -33,7 +33,7 @@ fi
 if [ -x "$script_root/../dotfiles.sh" ]; then
   . "$script_root/../dotfiles.sh"
 else
-  printf "\n[FAIL] dotfiles/script/setup: Can't find 'dotfiles.sh'. Abort!\n\n"
+  printf "\n[FAIL] $script_name: Can't find 'dotfiles.sh'. Abort!\n\n"
   exit 1
 fi
 
