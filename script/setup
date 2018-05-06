@@ -128,7 +128,7 @@ link_file () {
       mv "$target" "${target}.backup"
       success "$script_name: Moved '$target' to '${target}.backup'."
     elif [ "$skip" = "true" ]; then
-      success "$script_name: '$source' is already installed."
+      success "$script_name: '$target' is already installed."
     fi
   fi
 
@@ -159,7 +159,7 @@ install_dotfiles () {
 
 # Run our git/setup to create git/gitconfig.local.symlink
 if [ -x "$DOTFILES_ROOT/git/setup" ]; then
-  info "$script_name: Running git/setup now...""
+  info "$script_name: Running git/setup now..."
   "$DOTFILES_ROOT/git/setup"
 else
   user "$script_name: Can't find git/setup, or it's not executable."
