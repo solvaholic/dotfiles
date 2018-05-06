@@ -128,7 +128,7 @@ link_file () {
       mv "$target" "${target}.backup"
       success "$script_name: Moved '$target' to '${target}.backup'."
     elif [ "$skip" = "true" ]; then
-      success "$script_name: Skipped '$source'."
+      success "$script_name: '$source' is already installed."
     fi
   fi
 
@@ -139,7 +139,7 @@ link_file () {
 }
 
 install_dotfiles () {
-  info '$script_name: Installing dotfiles...'
+  info "$script_name: Installing dotfiles..."
 
   local overwrite_all="false" backup_all="false" skip_all="false"
 
@@ -159,7 +159,7 @@ install_dotfiles () {
 
 # Run our git/setup to create git/gitconfig.local.symlink
 if [ -x "$DOTFILES_ROOT/git/setup" ]; then
-  info '$script_name: Running git/setup now...'
+  info "$script_name: Running git/setup now...""
   "$DOTFILES_ROOT/git/setup"
 else
   user "$script_name: Can't find git/setup, or it's not executable."
@@ -174,5 +174,5 @@ install_dotfiles
 if [ -e "$DOTFILES_ROOT/$whichos/bootstrap" ]; then
   user "$script_name: Finished! You may wish to run '$whichos/setup' next."
 else
-  info "$script_name: Finished!"
+  success "$script_name: Finished!"
 fi
