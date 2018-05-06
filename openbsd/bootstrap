@@ -1,0 +1,129 @@
+#!/bin/sh
+#
+# Ensures dependencies are met for OpenBSD. Currently:
+# - The user can `doas` syspatch, fw_udpate, and pkg_add.
+# - /etc/installurl contains a working value.
+#
+
+DOTFILES_DEBUG=
+script_name=openbsd/bootstrap
+
+# Initialize the warnings counter.
+with_warnings=0
+
+#
+# Make sure `bootstrap` was called in a way we can get its path.
+#
+if [ -f "$0" ] && [ $( dirname "$0" ) ]; then
+  # $0 is a file and `dirname` succeeds, so we think Yes.
+  script_root="$( cd $( dirname "$0" ) && echo $PWD )"
+else
+  # $0 is not a file or `dirname` fails, so we think No.
+  script_root=
+  printf "\n[FAIL] $script_name: This script was called incorrectly. Unable to set \$script_root.\n\n"
+  exit 1
+fi
+
+#
+# Call dotfiles.sh to set some variables and define some functions.
+#
+if [ -x "$script_root/../dotfiles.sh" ]; then
+  . "$script_root/../dotfiles.sh"
+else
+  printf "\n[FAIL] $script_name: Can't find 'dotfiles.sh'. Abort!\n\n"
+  exit 1
+fi
+
+#
+# Does the user have permission to `doas` syspatch, fw_update, and pkg_add?
+#
+check_doas () {
+  info "$script_name: Checking 'doas' access..."
+  local mystring="$( doas echo "hello world" )"
+  local mysuccess="0"
+
+  debug "$script_name: After 'doas echo', \$mystring is '$mystring'."
+
+  if [ "$mystring" = "hello world" ]; then
+    mystring="$( doas syspatch -BOGUS 2>&1 )"
+    debug "$script_name: After 'doas syspatch', \$mystring is '$mystring'."
+    if [ "$mystring" = "usage: syspatch [-c | -l | -R | -r]" ]; then
+      mystring="$( doas fw_update -BOGUS 2>&1 | tail -n 1 )"
+      debug "$script_name: After 'doas fw_update', \$mystring is '$mystring'."
+      if [ "$mystring" = "Usage: fw_update [-adinv] [-D keyword] [-p path] [driver...]" ]; then
+        mystring="$( doas pkg_add 2>&1 | head -n 1 )"
+        debug "$script_name: After 'doas pkg_add', \$mystring is '$mystring'."
+        if [ "$mystring" = "pkg_add: Missing pkgname" ]; then
+          mysuccess="1"
+          debug "$script_name: Confirmed doas access OK!"
+        fi
+      fi
+    fi
+  fi
+
+  if [ "$mysuccess" = "1" ]; then
+    success "$script_name: Confirmed doas access OK!"
+    return 0
+  else
+    fail "$script_name: Unable to doas!"
+    user "Add yourelf to /etc/doas.conf. For example, log in as root and run:"
+    user "  \`echo \"permit persist $( whoami )\" >> /etc/doas.conf\`"
+    user "See the \`doas(1)\` and \`doas.conf(5)\` manual pages for more details."
+    with_warnings=$(( with_warnings+1 ))
+    return 1
+  fi
+}
+
+#
+# Make sure /etc/installurl contains a working value.
+#
+check_installurl () {
+  if [ -e /etc/installurl ]; then
+    local currentUrl="$( grep -Eo "^https://[^\/]+/pub/OpenBSD$" /etc/installurl )"
+  else
+    local currentUrl=
+  fi
+
+  debug "$script_name: \$currentUrl is '$currentUrl'."
+
+  if [ ! -z "$currentUrl" ]; then
+    # We got a good-looking pattern, anyway. Let's try it!
+    # TODO: Figure out how to try it.
+    success "$script_name: /etc/installurl contains '$currentUrl'."
+  else
+    # Didn't find a pattern we like in /etc/installurl.
+    fail "$script_name: /etc/installurl doesn't contain a URL I like."
+    user "Please pick an OpenBSD HTTPS mirror and set it in /etc/installurl."
+    user "For example:"
+    user "  \`echo \"https://fastly.cdn.openbsd.org/pub/OpenBSD\" | doas tee /etc/installurl\`"
+    user "See the \`installurl(5)\` manual page for more details and"
+    user "https://www.openbsd.org/ftp.html for a list of mirrors."
+    with_warnings=$(( with_warnings+1 ))
+  fi
+}
+
+#
+# Do the needful.
+#
+
+# - The user can `doas` syspatch, fw_udpate, and pkg_add.
+if [ "$( id -u )" = "0" ]; then
+  # We're running as root?!
+  user "$script_name: This script is running as root!"
+  with_warnings=$(( with_warnings+1 ))
+else
+  # We're not running as root. Check for `doas` privileges.
+  check_doas
+fi
+
+# - /etc/installurl contains a working value.
+check_installurl
+
+#
+# All done!
+#
+if [ $with_warnings -eq 0 ]; then
+  success "$script_name: Finished!"
+else
+  success "$script_name: Finished, with $with_warnings warnings. Please resolve any '[ ?? ]' notices reported above."
+fi
