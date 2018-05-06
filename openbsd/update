@@ -5,7 +5,7 @@
 #
 # - Call openbsd/bootstrap.
 # - Update the system (syspatch, fw_udpate).
-# - Update packages (pkg_add -Uu).
+# - Update packages (pkg_add -u).
 # - Install any missing default packages.
 #
 
