@@ -7,8 +7,8 @@
 #
 # This will _not_ run the OS-specific `setup` script.
 #
-# - Call `../git/setup` to set my Git configuration.
 # - Symlink config files and directories in the right places.
+# - Call `../git/setup` to set my Git configuration.
 # - ???
 #
 
@@ -159,3 +159,10 @@ install_dotfiles () {
 }
 
 install_dotfiles
+
+if [ -x "$DOTFILES_ROOT/git/setup" ]; then
+  info '$script_name: Running git/setup now...'
+  "$DOTFILES_ROOT/git/setup"
+else
+  user "$script_name: Can't find git/setup, or it's not executable."
+fi
