@@ -9,6 +9,9 @@
 # - Install any missing default packages.
 #
 
+# TODO: Figure out whether this can run before we bootstrap and setup
+#       dotfiles itself, and whether/how that'd be useful.
+
 DOTFILES_DEBUG=
 script_name=script/update
 
