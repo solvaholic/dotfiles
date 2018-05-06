@@ -13,7 +13,7 @@
 #
 # Either `set -o posix` or warn.
 #
-if [ set -o posix ]; then
+if [ $( set -o posix > /dev/null 2>&1 ) ]; then
   set -o posix
 else
   printf "\n[WARN] $script_name: Can't \`set -o posix\`! This may not work right.\n\n"
