@@ -1,1 +1,1 @@
-# TODO: What was the right command here?
+exec ck-launch-session startxfce4
