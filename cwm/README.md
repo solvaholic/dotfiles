@@ -20,7 +20,7 @@ Ensures prerequisites are met for running cwm(1):
 
 ## `cwm/setup`
 
-Installs the cwm configuration from `$DOTFIELS_ROOT/cwm`.
+Installs the cwm configuration from `$DOTFILES_ROOT/cwm`.
 
 `cwm/setup` may replace your existing `~/.xinitrc` and `~/.xsession`. It may recommend changes to other configuration files.
 

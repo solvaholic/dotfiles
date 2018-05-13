@@ -23,7 +23,7 @@ Ensures prerequisites are met for running xfce:
 
 ## `xfce/setup`
 
-Installs the xfce configuration from `$DOTFIELS_ROOT/xfce`.
+Installs the xfce configuration from `$DOTFILES_ROOT/xfce`.
 
 `xfce/setup` may replace your existing `~/.xinitrc` and `~/.xsession`. It may recommend changes to other configuration files.
 
