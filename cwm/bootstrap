@@ -39,9 +39,9 @@ with_warnings=0
 #
 check_os () {
   if [ "$WHICHOS" = "OpenBSD" ]; then
-    return "yes"
+    return 0
   else
-    return "no"
+    return 1
   fi
 }
 
@@ -51,9 +51,9 @@ check_os () {
 check_dep () {
   if [ "$( which startx )" = "/usr/X11R6/bin/startx" ] && \
     [ "$( which cwm )" = "/usr/X11R6/bin/cwm" ]; then
-    return "yes"
+    return 0
   else
-    return "no"
+    return 1
   fi
 }
 
@@ -70,10 +70,13 @@ fi
 
 info "$script_name: Verifying dependencies..."
 
-if [ ! check_os = "yes" ]; then
+check_os && local _check_os="0"
+check_dep && local _check_dep="0"
+
+if [ ! $_check_os = "0" ]; then
   fail "$script_name: Unsupported operating system, '$WHICHOS'."
   exit 1
-elif [ ! check_dep = "yes" ]; then
+elif [ ! $_check_dep = "0" ]; then
   fail "$script_name: Missing dependencies. Check your X(7) and cwm(1) installs."
   exit 1
 fi
@@ -82,7 +85,7 @@ fi
 # All done!
 #
 if [ $with_warnings -eq 0 ]; then
-  success "$script_name: Finished!"
+  success "$script_name: Finished, all good!"
 else
   success "$script_name: Finished, with $with_warnings warnings. Please resolve any '[ ?? ]' notices reported above."
 fi
