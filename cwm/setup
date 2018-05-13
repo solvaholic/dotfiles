@@ -5,7 +5,7 @@
 # `cwm/setup` may replace your existing `~/.xinitrc` and `~/.xsession`.
 # It may also recommend changes to other configuration files.
 #
-# Use `$DOTFILES_ROOT`
+# Use `$DOTFILES_ROOT/script/setup` to install `~/.cwmrc`.
 #
 
 script_name=cwm/setup
