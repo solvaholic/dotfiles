@@ -1,4 +1,0 @@
-# A custom path really should be in a module's path.zsh
-export PATH=$PATH:~/bin
-
-# Set some defaults...

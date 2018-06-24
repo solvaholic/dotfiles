@@ -1,6 +1,0 @@
-# Maybe? For interactive logins:
-bash_login.symlink
-bash_logout.symlink
-
-# Maybe? For non-interactive logins:
-bashrc.symlink
