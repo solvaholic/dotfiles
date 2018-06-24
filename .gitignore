@@ -20,3 +20,5 @@ git/gitconfig.local.symlink
 
 .DS_Store
 **/.DS_Store
+
+.todos
