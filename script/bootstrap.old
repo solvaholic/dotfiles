@@ -1,0 +1,106 @@
+#!/bin/sh
+#
+# Ensures dependencies are met for `dotfiles`. Currently:
+# - Am I cloned in the user's home directory?
+# - What OS am I running on?
+# - Run the bootstrap for this OS.
+# - Ensure I have git.
+# - Ensure I have /bin/sh.
+#
+
+DOTFILES_DEBUG=
+script_name=script/bootstrap
+
+# Initialize the warnings counter.
+with_warnings=0
+
+#
+# Make sure `bootstrap` was called in a way we can get its path.
+#
+if [ -f "$0" ] && [ $( dirname "$0" ) ]; then
+  # $0 is a file and `dirname` succeeds, so we think Yes.
+  script_root="$( cd $( dirname "$0" ) && echo $PWD )"
+else
+  # $0 is not a file or `dirname` fails, so we think No.
+  script_root=
+  printf "\n[FAIL] $script_name: This script was called incorrectly. Unable to set \$script_root.\n\n"
+  exit 1
+fi
+
+#
+# Call dotfiles.sh to set some variables and define some functions.
+#
+if [ -x "$script_root/../dotfiles.sh" ]; then
+  . "$script_root/../dotfiles.sh"
+else
+  printf "\n[FAIL] $script_name: Can't find 'dotfiles.sh'. Abort!\n\n"
+  exit 1
+fi
+
+#
+# Am I cloned in the user's home directory?
+#
+if [ ! "$DOTFILES_ROOT" = "${DOTFILES_ROOT#$HOME}" ]; then
+  # $HOME _is_ matched in $DOTFILES_ROOT, so Yes.
+  info "$script_name: Dotfiles is cloned under '$DOTFILES_ROOT'."
+else
+  # $HOME is _not_ matched in $DOTFILES_ROOT, so No.
+  user "$script_name: Please clone dotfiles under your homedir, for example: '$HOME/.dotfiles'."
+  with_warnings=$(( with_warnings+1 ))
+fi
+
+#
+# What OS am I running on? ($WHICHOS is set in `dotfiles.sh`)
+#
+if [ ! -z "$WHICHOS" ]; then
+  info "$script_name: Detected operating system is '$WHICHOS'."
+else
+  fail "$script_name: Can't detect which operating system this is!"
+  exit 1
+fi
+
+#
+# Run the bootstrap for this OS, which should:
+# - Ensure I have permission to install and update packages.
+#
+whichos="$( echo $WHICHOS | tr '[A-Z]' '[a-z]' )"
+if [ -x "$DOTFILES_ROOT/$whichos/bootstrap" ]; then
+  info "$script_name: Running '$DOTFILES_ROOT/$whichos/bootstrap'..."
+  . "$DOTFILES_ROOT/$whichos/bootstrap"
+else
+  user "$script_name: Bootstrap not found for $WHICHOS!"
+  with_warnings=$(( with_warnings+1 ))
+fi
+
+#
+# Ensure I have git.
+#
+if [ $( which git ) ]; then
+  git_version="$( $( which git ) version )"
+  info "$script_name: Found '$git_version'."
+else
+  fail "$script_name: Did not find \`git\`!"
+  exit 1
+fi
+
+#
+# Ensure I have /bin/sh
+# NOTE: This may not work in busybox, for example in Alpine Linux.
+#
+if [ "$( which sh )" = "/bin/sh" ] && [ -x "/bin/sh" ]; then
+  info "$script_name: Found \`/bin/sh\`."
+else
+  fail "$script_name: Can't find \`/bin/sh\` or it's not executable!"
+  exit 1
+fi
+
+#
+# All done!
+#
+if [ $with_warnings -eq 0 ]; then
+  success "$script_name: Finished!"
+else
+  success "$script_name: Finished, with $with_warnings warnings. Please resolve any '[ ?? ]' notices reported above."
+fi
+
+exit 0
