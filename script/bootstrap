@@ -58,5 +58,24 @@ else
   exit 1
 fi
 
+# Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
+if . ~/.dotfiles.conf && [ -x "$DOTFILES_ROOT" ]; then
+  # Found and loaded ~/.dotfiles.conf OK.
+  if . "$DOTFILES_ROOT/dotfiles.sh"; then
+    # Found and ran dotfiles.sh OK.
+    debug "$0: Loaded ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh OK."
+  else
+    echo -e "\n\nMissing $DOTFILES_ROOT/dotfiles.sh"
+    echo -e "Please check your dotfiles installation.\n\n"
+    exit 1
+  fi
+else
+  # We really, really should not be able to reach here.
+  echo -e "\n\nMissing ~/.dotfiles.conf"
+  echo -e "Please run dotfiles/script/bootstrap .. again?\n\n"
+  exit 1
+fi
+
 # If we made it this far then we think everything went OK.
-echo -e "\n\ndotfiles/script/bootstrap: Success.\n\n"
+success "$0: Success."
+exit 0
