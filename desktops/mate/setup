@@ -1,6 +1,0 @@
-#!/bin/sh
-if [ "$DESKTOP_SESSION" = "mate" ]; then
-  dconf load / < ~/.dotfiles/desktops/mate/defaults02.dconf
-else
-  printf "\n[??] mate/setup: \$DESKTOP_SESSION is not 'mate'.\n"
-fi
