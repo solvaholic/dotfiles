@@ -42,8 +42,8 @@ mytopics="$(find -H . -maxdepth 3 ! -path "*/.git*" -type f \
 -name "*.symlink" -o -name "setup" | cut -d/ -f2 | sort -u)"
 
 # TODO: Un-do this. While testing, we'll just use the testing topic.
-mytopics="testing"
 # TODO: Make sure we don't run a topic for script.
+mytopics="ssh"
 
 debug "$0: Found topics '$(echo $mytopics)'."
 

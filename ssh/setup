@@ -1,0 +1,104 @@
+# This script is not meant to be executed directly.
+# Run dotfiles/script/setup.
+#
+#   ssh/setup:
+#     - Make sure we have SSH.
+#     - Create ~/.ssh/config if it doesn't exist.
+#     - Install custom SSH configs.
+#     - Install custom SSH known_hosts.
+#     - Prompt user to generate and publish new SSH keys.
+
+mytopic=ssh
+myname=ssh/setup
+
+debug "Entering '$mytopic' setup..."
+
+#
+# Make sure we have SSH.
+#
+if [ -x $(which ssh) ]; then
+  debug "$myname: Found ssh(1) OK."
+else
+  fail "Did not find ssh(1). Fix that, and try again."
+  return 1
+fi
+
+
+#
+# Create ~/.ssh/config if it doesn't exist.
+#
+if mkdir -p ~/.ssh && chmod go-w ~/.ssh; then
+  debug "$myname: ~/.ssh exists and is only writeable by user."
+fi
+if [ -r ~/.ssh/config ]; then
+  # We already have ~/.ssh/config.
+  info "You already have a ~/.ssh/config."
+else
+  # Copy up our basic ssh_config.
+  if cp "$DOTFILES_ROOT/ssh/ssh_config" ~/.ssh/config; then
+    info "$myname: Installed ~/.ssh/config."
+  else
+    fail "$myname: Unable to install ~/.ssh/config"
+  fi
+fi
+if grep ^Include ~/.ssh/config > /dev/null; then
+  info "Here are the Includes, in your ~/.ssh/config:"
+  grep ^Include ~/.ssh/config | while read line; do
+    info "    $line"
+  done
+fi
+
+#
+# Install custom SSH configs.
+#
+myfiles="$(find -H "$DOTFILES_ROOT/$thistopic" -maxdepth 2 -name 'ssh_config.*' ! -path '*/.git*')"
+if [ -n "$myfiles" ]; then
+  debug "$0: Found custom configs to install: '$(echo $myfiles)'."
+  for thisfile in $myfiles; do
+    target="$HOME/.ssh/"
+    debug "$myname: 'cp \"$thisfile\" \"$target\"'"
+    cp "$thisfile" "$target"
+  done
+fi
+myfiles="$(find -H ~/.ssh/ -maxdepth 1 -name 'ssh_config.*')"
+if [ -n "$myfiles" ]; then
+  info "$myname: You currently have these custom SSH configs installed:"
+  ls ~/.ssh/ssh_config.* | while read line; do
+    info "    $line"
+  done
+fi
+
+
+#
+# Install custom SSH known_hosts.
+#
+myfiles="$(find -H "$DOTFILES_ROOT/$thistopic" -maxdepth 2 -name 'known_hosts.*' ! -path '*/.git*')"
+if [ -n "$myfiles" ]; then
+  debug "$0: Found custom SSH known_hosts to install: '$(echo $myfiles)'."
+  for thisfile in $myfiles; do
+    target="$HOME/.ssh/"
+    debug "$myname: 'cp \"$thisfile\" \"$target\"'"
+    cp "$thisfile" "$target"
+  done
+fi
+myfiles="$(find -H ~/.ssh/ -maxdepth 1 -name 'known_hosts.*')"
+if [ -n "$myfiles" ]; then
+  info "$myname: You currently have these custom SSH known_hosts installed:"
+  ls ~/.ssh/known_hosts.* | while read line; do
+    info "    $line"
+  done
+fi
+
+
+#
+# Prompt user to generate and publish new SSH keys.
+#
+if [ -r ~/.ssh/id_ed25519 ] && [ -r ~/.ssh/id_ed25519.pub ]; then
+  info "You already have a SSH key. ~/.ssh/id_ed25519.pub is:"
+  info "    $(cat ~/.ssh/id_ed25519.pub)"
+  info "When you want to generate a new SSH keypair:"
+  info "    ssh-keygen -t ed25519 -C \"$(hostname) $(date +%Y%m%d)\" -f ~/.ssh/id_ed25519"
+else
+  info "Generating your SSH key ~/.ssh/id_ed25519:"
+  ssh-keygen -t ed25519 -C "$(hostname) $(date +%Y%m%d)" -f ~/.ssh/id_ed25519
+fi
