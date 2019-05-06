@@ -35,7 +35,7 @@ if "$DOTFILES_ROOT/script/bootstrap"; then
   if "$DOTFILES_ROOT/script/setup"; then
 
     # If we made it this far then we think everything went OK.
-    success "Update completed OK."
+    success "$0: Success."
     exit 0
     
   else

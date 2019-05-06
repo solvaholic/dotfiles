@@ -46,28 +46,24 @@ mytopics="testing"
 # TODO: Make sure we don't run a topic for script.
 
 debug "$0: Found topics '$(echo $mytopics)'."
+
+# We need these 3, for when we call link_file().
 overwrite_all="false" backup_all="false" skip_all="false"
+
 for thistopic in $mytopics; do
   info "Setting up topic '$thistopic'..."
   if [ -r $DOTFILES_ROOT/$thistopic/setup ]; then
     debug "$0: Running setup for '$thistopic'..."
-    if . "$DOTFILES_ROOT/$thistopic/setup"; then
-      success "Ran '$DOTFILES_ROOT/$thistopic/setup' OK."
-    else
-      fail "'$DOTFILES_ROOT/$thistopic/setup' returned an error."
-    fi
+    . "$DOTFILES_ROOT/$thistopic/setup"
   else
     # $thistopic has no setup, so just link its *.symlink files.
-    debug "$0: Linking files for '$thistopic'..."
     # TODO: Fix this so it'll handle filenames that have spaces.
     mysymlinks="$(find -H "$DOTFILES_ROOT/$thistopic" -maxdepth 2 -name '*.symlink' ! -path '*/.git*')"
     debug "$0: Found files to link: '$(echo $mysymlinks)'."
     for source in $mysymlinks; do
       target="$HOME/.$(basename "${source%.*}")"
       debug "$0: 'link_file \"$source\" \"$target\"'"
-      if link_file "$source" "$target"; then
-        debug "$0: OK"
-      fi
+      link_file "$source" "$target"
     done
   fi
 done
