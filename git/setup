@@ -1,50 +1,31 @@
-#!/bin/sh
+# This script is not meant to be executed directly.
+# Run dotfiles/script/setup.
 #
+#   git/setup:
+#     - Assume we have Git, because script/bootstrap requires it.
+#     - Create .gitconfig.local, if it doesn't exist.
+#     - Link files named *.symlink.
 
-#
-# TODO: git/setup is intended to be called from script/setup. If it's
-#       called directly then these `return` may fail ungracefully.
-#       Handle that.
-#
-
-#
-# Was `setup` called in a way we can get its path?
-#
-if [ -f "$0" ] && [ $( dirname "$0" ) ]; then
-  # $0 is a file and `dirname` succeeds, so we think Yes.
-  script_root="$( cd $( dirname "$0" ) && echo $PWD )"
-else
-  # $0 is not a file or `dirname` fails, so we think No.
-  script_root=
-  printf "\n[FAIL] git/setup: This script was called incorrectly. Unable to set \$script_root.\n\n"
-  return 1
-fi
-
-
-if [ ! -x "$DOTFILES_ROOT" ] && [ -z "$WHICHOS" ]; then
-  # $DOTFILES_ROOT is inaccessible or $WHICHOS is not set, so call
-  # dotfiles.sh to set some variables and define some functions.
-  if [ -x "$script_root/../dotfiles.sh" ]; then
-    . "$script_root/../dotfiles.sh"
-  else
-    printf "\n[FAIL] git/setup: Can't find 'dotfiles.sh'. Abort!\n\n"
-    exit 1
-  fi
-fi
+debug "$0: Entering git/setup ..."
 
 #
 # Create .gitconfig.local, if it doesn't exist.
 #
 if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
 
-  info 'git/setup: Setting up your local Git config...'
-
   # If we're on MacOS then use 'osxkeychain'.
-  if [ "$WHICHOS" = "MacOS" ]; then
+  if [ "$DOTFILES_OS" = "MacOS" ]; then
     git_credential='osxkeychain'
   # Otherwise use 'store'.
   else
     git_credential='store'
+    info "- - - -"
+    user "HEY, YOUR GIT CREDENTIALS MAY NOT BE SAFE."
+    info "Git will be configured to use the 'store' credential helper. If you"
+    info "use HTTPS with your login and password, your password will be stored"
+    info "in plain text in your home directory."
+    info "- - - -"
+    # TODO: Move to a secure way to cache Git creds in Linux and other OS.
   fi
 
   # TODO: Validate input here.
@@ -59,9 +40,31 @@ if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
   # user ' - What is your GitHub author email?'
   # read -e git_authoremail
   git_authoremail="$git_username@users.noreply.github.com"
+  user "Git will be configured to use this author email address:"
+  info "$git_authoremail"
 
-  sed -e "s/USERNAME/$git_username/g" -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" "$DOTFILES_ROOT/git/gitconfig.local.symlink.example" > "$DOTFILES_ROOT/git/gitconfig.local.symlink"
-
-  success 'git/setup: Finished!'
+  sed -e "s/USERNAME/$git_username/g" \
+      -e "s/AUTHORNAME/$git_authorname/g" \
+      -e "s/AUTHOREMAIL/$git_authoremail/g" \
+      -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" \
+      "$DOTFILES_ROOT/git/gitconfig.local.symlink.example" \
+      > "$DOTFILES_ROOT/git/gitconfig.local.symlink"
 
 fi
+
+#
+# Link files named *.symlink.
+#
+mysymlinks="$(find -H "$DOTFILES_ROOT/git" -maxdepth 2 -name '*.symlink' ! -path '*/.git*')"
+debug "git/setup: Found files to link: '$(echo $mysymlinks)'."
+
+# We need these 3, for when we call link_file().
+overwrite_all="false" backup_all="false" skip_all="false"
+
+for source in $mysymlinks; do
+  target="$HOME/.$(basename "${source%.*}")"
+  debug "$0: 'link_file \"$source\" \"$target\"'"
+  link_file "$source" "$target"
+done
+
+success 'git/setup: Success.'
