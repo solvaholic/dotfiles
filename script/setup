@@ -53,8 +53,9 @@ overwrite_all="false" backup_all="false" skip_all="false"
 for thistopic in $mytopics; do
   info "Setting up topic '$thistopic'..."
   if [ -r $DOTFILES_ROOT/$thistopic/setup ]; then
-    debug "$0: Running setup for '$thistopic'..."
+    debug "$0: '. \"$DOTFILES_ROOT/$thistopic/setup\"'"
     . "$DOTFILES_ROOT/$thistopic/setup"
+    myresult=$?
   else
     # $thistopic has no setup, so just link its *.symlink files.
     # TODO: Fix this so it'll handle filenames that have spaces.
@@ -65,9 +66,14 @@ for thistopic in $mytopics; do
       debug "$0: 'link_file \"$source\" \"$target\"'"
       link_file "$source" "$target"
     done
+    myresult=$?
   fi
 done
 
-# If we made it this far then we think everything went OK.
-success "$0: Success."
-exit 0
+if [ $myresult -eq 0 ]; then
+  success "$0: Success."
+else
+  fail "$0: Failure."
+fi
+
+exit $myresult
