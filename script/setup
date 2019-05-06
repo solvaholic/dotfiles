@@ -43,6 +43,7 @@ mytopics="$(find -H . -maxdepth 3 ! -path "*/.git*" -type f \
 
 # TODO: Un-do this. While testing, we'll just use the testing topic.
 mytopics="testing"
+# TODO: Make sure we don't run a topic for script.
 
 debug "$0: Found topics '$(echo $mytopics)'."
 overwrite_all="false" backup_all="false" skip_all="false"
