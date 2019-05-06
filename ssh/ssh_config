@@ -1,0 +1,23 @@
+# See `man ssh_config` for details and examples.
+
+# The first matching config will be used. Override other options here:
+IdentityFile ~/.ssh/id_ed25519
+ConnectTimeout 30
+
+# Include custom global and per-host options:
+Include ~/.ssh/ssh_config.*
+
+# Per-host options. Use "Host" or "Match" to describe each host.
+
+# Apply these options to ephemeral hosts, for example in AWS EC2:
+Host ec2-*.amazonaws.com
+  User ec2-user
+  Port 22
+  IdentityFile ~/.ssh/ec2-instance-key
+  StrictHostKeyChecking yes
+  UserKnownHostsFile /dev/null
+
+# To use a local short name, for example "comet":
+Host comet
+  HostName 192.168.0.3
+  IdentityFile ~/.ssh/id_rsa
