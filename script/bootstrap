@@ -1,10 +1,11 @@
 #   bootstrap:
 #     - Set $DOTFILES_SHELL, prefer /bin/bash or /bin/sh.
 #     - Run under $DOTFILES_SHELL, unless it's set to "current".
-#     - Make sure we have git.
 #     - Figure out $DOTFILES_ROOT.
 #     - Figure out $DOTFILES_OS.
 #     - Write ~/.dotfiles.conf.
+#     - Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
+#     - Make sure we have git.
 
 
 # Make sure we can tell where we are.
@@ -39,12 +40,6 @@ if [ -z "$DOTFILES_EXEC" ] && [ "$DOTFILES_SHELL" != "current" ]; then
   exec "$DOTFILES_SHELL" -c "DOTFILES_EXEC=$DOTFILES_SHELL $0"
 fi
 
-# Make sure we have git.
-# TODO: What other prerequisites should we check for?
-if [ ! -x $(which git) ]; then
-  echo -e "\n\nDid not find git(1). Fix that, and try again.\n\n"
-  exit 1
-fi
 
 # Figure out $DOTFILES_ROOT.
 # cd into $0's directory then ask Git to find the root of the repo.
@@ -100,6 +95,17 @@ else
   echo -e "Please run dotfiles/script/bootstrap .. again?\n\n"
   exit 1
 fi
+
+
+# Make sure we have git.
+# TODO: What other prerequisites should we check for?
+if [ -x $(which git) ]; then
+  debug "$0: Found git(1) OK."
+else
+  fail "Did not find git(1). Fix that, and try again."
+  exit 1
+fi
+
 
 # If we made it this far then we think everything went OK.
 success "$0: Success."
