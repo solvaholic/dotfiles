@@ -37,13 +37,9 @@ fi
 
 # For each topic, run setup if it exists or just link files.
 debug "$0: Entering topics setup..."
-cd "$DOTFILES_ROOT"
-mytopics="$(find -H . -maxdepth 3 ! -path "*/.git*" -type f \
--name "*.symlink" -o -name "setup" | cut -d/ -f2 | sort -u)"
-
-# TODO: Un-do this. While testing, we'll just use the testing topic.
-# TODO: Make sure we don't run a topic for script.
-mytopics="ssh"
+mytopics="$(find -H "$DOTFILES_ROOT" -maxdepth 3 \
+! -path "*/.git/*" ! -path "*/script/*" -name setup -o -name "*.symlink" \
+| cut -d/ -f4 | sort -u)"
 
 debug "$0: Found topics '$(echo $mytopics)'."
 
