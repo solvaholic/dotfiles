@@ -39,7 +39,7 @@ fi
 debug "$0: Entering topics setup..."
 mytopics="$(find -H "$DOTFILES_ROOT" -maxdepth 3 \
 ! -path "*/.git/*" ! -path "*/script/*" -name setup -o -name "*.symlink" \
-| cut -d/ -f4 | sort -u)"
+| cut -d/ -f5 | sort -u)"
 
 debug "$0: Found topics '$(echo $mytopics)'."
 
