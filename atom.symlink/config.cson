@@ -4,6 +4,8 @@
       beautify_on_save: true
     css:
       beautify_on_save: true
+    general:
+      beautifyEntireFileOnSave: false
     html:
       beautify_on_save: true
     js:
@@ -22,11 +24,12 @@
       "metrics"
       "react"
       "linter-rubocop"
+      "atom-beautify"
     ]
     telemetryConsent: "no"
     themes: [
-      "atom-dark-ui"
-      "atom-dark-syntax"
+      "atom-light-ui"
+      "atom-light-syntax"
     ]
     useProxySettingsWhenCallingApm: false
   editor:
@@ -49,6 +52,8 @@
     hideVcsIgnoredFiles: false
   welcome:
     showOnStartup: false
+  whitespace:
+    ignoreWhitespaceOnlyLines: true
 ".js.jsx.react.source":
   editor:
     autoIndent: true
