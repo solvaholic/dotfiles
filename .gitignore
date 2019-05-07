@@ -10,7 +10,7 @@ atom.symlink/blob-store
 atom.symlink/recovery
 atom.symlink/*.token
 atom.symlink/nohup.out
-
+atom.symlink/.atom-socket-secret-*
 aws.symlink/config
 aws.symlink/credentials
 
