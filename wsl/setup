@@ -1,0 +1,56 @@
+# This script is not meant to be executed directly.
+# Run dotfiles/script/setup.
+#
+#   wsl/setup:
+#     - Assume we have Git, because script/bootstrap requires it.
+#     - Verify user's sudo access.
+#     - Make sure we're running on WSL.
+#     - Install wsl.conf.
+
+mytopic=wsl
+myname=wsl/setup
+
+debug "Entering '$mytopic' setup..."
+
+#
+# Make sure we're running on WSL.
+#
+
+
+#
+# Make sure we're running on WSL.
+#
+if findmnt --source C: > /dev/null; then
+  debug "$myname: Found C: mounted, so we think we're on WSL."
+else
+  debug "$myname: Did not find C: mounted, so we think we're _not_ on WSL."
+  # info "It looks like we're not on WSL. Skipping $myname."
+  # return 0
+fi
+
+#
+# Install wsl.conf.
+#
+myfile="$DOTFILES_ROOT/$mytopic/wsl.conf"
+debug "$myname: \$myfile is '$myfile'."
+if [ -d /etc ] && [ -r "$myfile" ]; then
+  if [ -e /etc/wsl.conf ]; then
+    info "/etc/wsl.conf already exists."
+    info "If you'd like to make changes, compare /etc/wsl.conf to:"
+    info "  $myfile"
+    return
+  else
+    debug "$myname: sudo cp \"$myfile\" /etc/"
+    if run_as_root "cp \"$myfile\" /etc/" && [ -r /etc/wsl.conf ]; then
+      success "Successfully installed /etc/wsl.conf"
+      return
+    else
+      debug "$myname: Shit broke, yo."
+      return 1
+    fi
+  fi
+else
+  fail "Unable to copy this file to /etc/wsl.conf:"
+  info "  $myfile"
+  return 1
+fi
