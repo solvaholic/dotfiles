@@ -31,6 +31,54 @@ debug () {
 }
 
 #
+# Define can_i_sudo() function testing sudo access.
+#
+can_i_sudo () {
+  user "Checking whether you can sudo. You may be asked to enter your password."
+  if [ -x "$(which sudo)" ]; then
+    if sudo -v; then
+      info "Alright! You're good to go."
+      return 0
+    else
+      info "That didn't work. Check your sudo config."
+      return 1
+    fi
+  else
+    info "Did not find sudo. Please install and configure it."
+    return 1
+  fi
+}
+
+#
+# Define run_as_root() function.
+#
+run_as_root () {
+  if [ -z "$1" ]; then
+    debug "$0: run_as_root() called with empty command."
+    return 1
+  fi
+  local mycmd="$1"
+  debug "$0: Attempting to run as root:"
+  debug "  $mycmd"
+  if [ "$(id -u)" = "0" ]; then
+    debug "$0: We are root, so just 'bash -c \"\$mycmd\"'."
+    bash -c "$mycmd"
+    return
+  else
+    if can_i_sudo; then
+      debug "$0: We can sudo, so 'sudo bash -c \"\$mycmd\"'."
+      user "Attempting to run this command. You may be asked for your password:"
+      info "  sudo bash -c \"$mycmd\""
+      sudo bash -c "$mycmd"
+      return
+    else
+      debug "We're not root, and we can't sudo. Sorry, boss."
+      return 1
+    fi
+  fi
+}
+
+#
 # Define link_file() function for creating symlinks.
 #
 link_file () {
@@ -41,7 +89,7 @@ link_file () {
   local source="$1" target="$2" shortsource="${source#$HOME/}"
   local overwrite= backup= skip= action=
   local script_name="link_file()"
-  
+
   # Do $source and $target look like valid paths? If not then return 1.
   if [ ! -e "$source" ]; then
     fail "$script_name: \$source '$source' doesn't exist!"
