@@ -1,4 +1,3 @@
-#!/bin/sh
 #
 # Defaults and functions for `dotfiles` scripts.
 #
@@ -27,7 +26,7 @@ fail () {
 
 debug () {
   if [ -n "$DOTFILES_DEBUG" ] && [ "$DOTFILES_DEBUG" -ne 0 ]; then
-    printf "\r  [ \033[0;33m##\033[0m ] %s\n" "$1" >&2
+    printf "\r  [ \033[0;33m==\033[0m ] %s\n" "$1" >&2
   fi
 }
 
