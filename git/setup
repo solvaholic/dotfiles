@@ -6,7 +6,10 @@
 #     - Create .gitconfig.local, if it doesn't exist.
 #     - Link files named *.symlink.
 
-debug "$0: Entering git/setup ..."
+mytopic=git
+myname=git/setup
+
+debug "Entering '$mytopic' setup..."
 
 #
 # Create .gitconfig.local, if it doesn't exist.
