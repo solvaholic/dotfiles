@@ -16,11 +16,29 @@ debug "Entering '$mytopic' setup..."
 #
 if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
 
+  myunamer="$(uname -r)"
+  debug "$myname: uname -r is \"$myunamer\"."
+  if [ "$DOTFILES_OS" = "Linux" ] && [ "$myunamer" != "${myunamer%-Microsoft}" ]; then
+  # If we're on Linux on WSL then use Git Credential Manager.
+    if [ ! -x ~/.local/gcmw/git-credential-manager.exe ]; then
+      info "Installing Git Credential Manager in WSL."
+      mkdir -p ~/.local/gcmw
+      curl -LO https://github.com/microsoft/Git-Credential-Manager-for-Windows/releases/download/1.18.5/gcmw-v1.18.5.zip \
+      | unzip -d ~/.local/gcmw/
+      chmod +x ~/.local/gcmw/git-credential-manager.exe
+    fi
+    if [ -x ~/.local/gcmw/git-credential-manager.exe ]; then
+      git_credential="${HOME}/.local/gcmw/git-credential-manager.exe"
+      info "Git credential.helper set to Git Credential Manager."
+    else
+      fail "There was a problem configuring your Git credential helper."
+    fi
+  elif [ "$DOTFILES_OS" = "MacOS" ]; then
   # If we're on MacOS then use 'osxkeychain'.
-  if [ "$DOTFILES_OS" = "MacOS" ]; then
     git_credential='osxkeychain'
-  # Otherwise use 'store'.
+    info "Git credential.helper set to 'osxkeychain'."
   else
+  # Otherwise use 'store'.
     git_credential='store'
     info "- - - -"
     user "HEY, YOUR GIT CREDENTIALS MAY NOT BE SAFE."
