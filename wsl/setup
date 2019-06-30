@@ -45,3 +45,17 @@ else
   fail "Unable to copy this file to /etc/wsl.conf:"
   info "  $myfile"
 fi
+
+#
+# Set $DOCKER_HOST in ~/.bashrc
+#
+if grep -qs DOCKER_HOST ~/.bashrc; then
+  debug "$myname: \$DOCKER_HOST is already set in ~/.bashrc"
+else
+  debug "$myname: Add 'export \$DOCKER_HOST=tcp://localhost:2375' to ~/.bashrc."
+  if echo "export DOCKER_HOST=tcp://localhost:2375" >> ~/.bashrc; then
+    success "Successfully added \$DOCKER_HOST to ~/.bashrc"
+  else
+    debug "$myname: Shit broke, yo."
+  fi
+fi
