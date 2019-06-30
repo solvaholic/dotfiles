@@ -98,11 +98,19 @@ fi
 
 
 # Make sure we have git.
-# TODO: What other prerequisites should we check for?
-if [ -x $(which git) ]; then
+if [ -x "$(which git)" ]; then
   debug "$0: Found git(1) OK."
 else
   fail "Did not find git(1). Fix that, and try again."
+  exit 1
+fi
+
+# Make sure we have docker.
+# TODO: What other prerequisites should we check for?
+if [ -x "$(which docker)" ]; then
+  debug "$0: Found docker(1) OK."
+else
+  fail "Did not find docker(1). Fix that, and try again."
   exit 1
 fi
 
