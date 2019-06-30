@@ -20,7 +20,7 @@ if findmnt --source C: > /dev/null; then
 else
   debug "$myname: Did not find C: mounted, so we think we're _not_ on WSL."
   # info "It looks like we're not on WSL. Skipping $myname."
-  # return 0
+  return 0
 fi
 
 #
@@ -33,19 +33,15 @@ if [ -d /etc ] && [ -r "$myfile" ]; then
     info "/etc/wsl.conf already exists."
     info "If you'd like to make changes, compare /etc/wsl.conf to:"
     info "  $myfile"
-    return
   else
     debug "$myname: sudo cp \"$myfile\" /etc/"
     if run_as_root "cp \"$myfile\" /etc/" && [ -r /etc/wsl.conf ]; then
       success "Successfully installed /etc/wsl.conf"
-      return
     else
       debug "$myname: Shit broke, yo."
-      return 1
     fi
   fi
 else
   fail "Unable to copy this file to /etc/wsl.conf:"
   info "  $myfile"
-  return 1
 fi
