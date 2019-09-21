@@ -16,15 +16,17 @@ debug "Entering '$mytopic' setup..."
 #
 if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
 
-  myunamer="$(uname -r)"
-  debug "$myname: uname -r is \"$myunamer\"."
-  if [ "$DOTFILES_OS" = "Linux" ] && [ "$myunamer" != "${myunamer%-Microsoft}" ]; then
+  debug "$myname: uname -r is \"$(uname -r)\"."
+  if [ "$DOTFILES_OS" = "Linux" ] && grep Microsoft$ <(uname -r); then
   # If we're on Linux on WSL then use Git Credential Manager.
     if [ ! -x ~/.local/gcmw/git-credential-manager.exe ]; then
       info "Installing Git Credential Manager in WSL."
+      _gcmurl=https://github.com/microsoft/Git-Credential-Manager-for-Windows/releases/download/1.18.5/gcmw-v1.18.5.zip
+      _gcmzip="$(mktemp)"
       mkdir -p ~/.local/gcmw
-      curl -sLO https://github.com/microsoft/Git-Credential-Manager-for-Windows/releases/download/1.18.5/gcmw-v1.18.5.zip \
-      | unzip -d ~/.local/gcmw/
+      curl -sL "${_gcmurl}" > "${_gcmzip}" && \
+      unzip -d ~/.local/gcmw/ "${_gcmzip}" && \
+      rm "${_gcmzip}"
       chmod +x ~/.local/gcmw/git-credential-manager.exe
     fi
     if [ -x ~/.local/gcmw/git-credential-manager.exe ]; then
@@ -67,7 +69,7 @@ if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
   sed -e "s/USERNAME/$git_username/g" \
       -e "s/AUTHORNAME/$git_authorname/g" \
       -e "s/AUTHOREMAIL/$git_authoremail/g" \
-      -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" \
+      -e "s#GIT_CREDENTIAL_HELPER#$git_credential#g" \
       "$DOTFILES_ROOT/git/gitconfig.local.symlink.example" \
       > "$DOTFILES_ROOT/git/gitconfig.local.symlink"
 
