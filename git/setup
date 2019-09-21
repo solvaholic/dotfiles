@@ -23,7 +23,7 @@ if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
     if [ ! -x ~/.local/gcmw/git-credential-manager.exe ]; then
       info "Installing Git Credential Manager in WSL."
       mkdir -p ~/.local/gcmw
-      curl -LO https://github.com/microsoft/Git-Credential-Manager-for-Windows/releases/download/1.18.5/gcmw-v1.18.5.zip \
+      curl -sLO https://github.com/microsoft/Git-Credential-Manager-for-Windows/releases/download/1.18.5/gcmw-v1.18.5.zip \
       | unzip -d ~/.local/gcmw/
       chmod +x ~/.local/gcmw/git-credential-manager.exe
     fi
