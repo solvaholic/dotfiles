@@ -15,10 +15,10 @@ debug "Entering '$mytopic' setup..."
 #
 # Make sure we're running on WSL.
 #
-if findmnt --source C: > /dev/null; then
-  debug "$myname: Found C: mounted, so we think we're on WSL."
+if findmnt --source C:\\ > /dev/null; then
+  debug "$myname: Found C:\ mounted, so we think we're on WSL."
 else
-  debug "$myname: Did not find C: mounted, so we think we're _not_ on WSL."
+  debug "$myname: Did not find C:\ mounted, so we think we're _not_ on WSL."
   # info "It looks like we're not on WSL. Skipping $myname."
   return 0
 fi
