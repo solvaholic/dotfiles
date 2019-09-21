@@ -99,7 +99,15 @@ fi
 
 # Make sure we have the commands we'll need.
 # TODO: What other prerequisites should we check for?
-for _cmd in git unzip curl docker; do
+
+if _cmd=$(which docker || which docker.exe); then
+  debug "$0: Found '${_cmd##*/}' OK."
+else
+  fail "Did not find 'docker' or 'docker.exe'. Fix that, and try again."
+  exit 1
+fi
+
+for _cmd in git unzip curl mktemp; do
 
   if [ -x "$(which "${_cmd}")" ]; then
     debug "$0: Found '${_cmd}' OK."
