@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#
+# Use these scripts to setup and develop the dotfiles in this repository.
+#
+# - script/test: Test this version of these dotfiles.
+#
+
+# Change directory to the root of this repository.
+cd "$(git rev-parse --show-toplevel)" || exit
+
+# Set environment variables.
+# shellcheck disable=SC1090
+. ~/.dotfiles.conf || exit
+
+# - Lint all the things.
+./test/00_linters || exit

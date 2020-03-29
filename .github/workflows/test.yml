@@ -1,0 +1,11 @@
+name: Run tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Run script/test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./script/test
