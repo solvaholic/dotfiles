@@ -13,8 +13,7 @@
 cd "$(git rev-parse --show-toplevel)" || return
 
 echo "=== Shellcheck ==="
-_files="~/.dotfiles.conf \
-*/*.sh \
+_files="*/*.sh \
 */setup \
 script/* \
 test/*"

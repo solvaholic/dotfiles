@@ -1,48 +1,28 @@
-#   update:
+#!/bin/sh
+
+#
+# Use these scripts to setup and develop the dotfiles in this repository.
+#
+# - script/update:
+#
 #     - Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
 #     - Run bootstrap and setup scripts.
+#
+# Usage:
+#   ./script/update
+#
 
-# Make sure we can tell where we are.
-# $0 should be this script, and it should be executable.
-if [ ! -x "$0" ] || [ ! -x "${0%/*}" ]; then
-  echo -e "\n\nHow did you get here?\n\n\$0 is '$0'.\n\n"
-  exit 1
-fi
 
 # Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
-if . ~/.dotfiles.conf && [ -x "$DOTFILES_ROOT" ]; then
-  # Found and loaded ~/.dotfiles.conf OK.
-  if . "$DOTFILES_ROOT/dotfiles.sh"; then
-    # Found and ran dotfiles.sh OK.
-    debug "$0: Loaded ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh OK."
-  else
-    echo -e "\n\nMissing $DOTFILES_ROOT/dotfiles.sh"
-    echo -e "Please check your dotfiles installation.\n\n"
-    exit 1
-  fi
-else
-  echo -e "\n\nMissing ~/.dotfiles.conf"
-  echo -e "Please run dotfiles/script/bootstrap\n\n"
-  exit 1
-fi
+# shellcheck disable=SC1090
+. ~/.dotfiles.conf || exit
+"$DOTFILES_ROOT/dotfiles.sh" || exit
+debug "$0: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
+
 
 # Run bootstrap and setup scripts.
 
-debug "$0: '$DOTFILES_ROOT/script/bootstrap > /dev/null'"
-if "$DOTFILES_ROOT/script/bootstrap"; then
-  
-  debug "$0: '$DOTFILES_ROOT/script/setup'"
-  if "$DOTFILES_ROOT/script/setup"; then
-
-    # If we made it this far then we think everything went OK.
-    success "$0: Success."
-    exit 0
-    
-  else
-    fail "Setup failed."
-    exit 1
-  fi
-else
-  fail "Bootstrap failed."
-  exit 1
-fi
+debug "$0: $DOTFILES_ROOT/script/bootstrap > /dev/null"
+"$DOTFILES_ROOT/script/bootstrap" || (fail "Bootstrap failed."; exit)
+debug "$0: $DOTFILES_ROOT/script/setup"
+"$DOTFILES_ROOT/script/setup" || (fail "Setup failed."; exit)

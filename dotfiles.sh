@@ -1,8 +1,15 @@
+#!/bin/sh
+
 #
-# Defaults and functions for `dotfiles` scripts.
+# Use these scripts to setup and develop the dotfiles in this repository.
 #
-# This file must be in the root of the `dotfiles` installation,
-# typically `~/.dotfiles`.
+# - dotfiles.sh: Define variables and functions for dotfiles scripts.
+#
+# Usage:
+#   . "$DOTFILES_ROOT/dotfiles.sh"
+#
+# This file must be in the root of the dotfiles installation,
+# typically ~/.dotfiles.
 #
 
 # Define some reusable functions.
@@ -31,11 +38,11 @@ debug () {
 }
 
 #
-# Define can_i_sudo() function testing sudo access.
+# Define can_i_sudo() function for testing sudo access.
 #
 can_i_sudo () {
   user "Checking whether you can sudo. You may be asked to enter your password."
-  if [ -x "$(which sudo)" ]; then
+  if [ -x "$(command -v sudo)" ]; then
     if sudo -v; then
       info "Alright! You're good to go."
       return 0
@@ -57,19 +64,19 @@ run_as_root () {
     debug "$0: run_as_root() called with empty command."
     return 1
   fi
-  local mycmd="$1"
+  _mycmd="$1"
   debug "$0: Attempting to run as root:"
-  debug "  $mycmd"
+  debug "  $_mycmd"
   if [ "$(id -u)" = "0" ]; then
-    debug "$0: We are root, so just 'bash -c \"\$mycmd\"'."
-    bash -c "$mycmd"
+    debug "$0: We are root, so just 'bash -c \"\$_mycmd\"'."
+    bash -c "$_mycmd"
     return
   else
     if can_i_sudo; then
-      debug "$0: We can sudo, so 'sudo bash -c \"\$mycmd\"'."
+      debug "$0: We can sudo, so 'sudo bash -c \"\$_mycmd\"'."
       user "Attempting to run this command. You may be asked for your password:"
-      info "  sudo bash -c \"$mycmd\""
-      sudo bash -c "$mycmd"
+      info "  sudo bash -c \"$_mycmd\""
+      sudo bash -c "$_mycmd"
       return
     else
       debug "We're not root, and we can't sudo. Sorry, boss."
@@ -86,9 +93,9 @@ link_file () {
   # $source. If $target already exists but is _not_ a link to $source
   # then ask the user what to do.
 
-  local source="$1" target="$2" shortsource="${source#$HOME/}"
-  local overwrite= backup= skip= action=
-  local script_name="link_file()"
+  source="$1" target="$2" shortsource="${source#$HOME/}"
+  overwrite='' backup='' skip='' action=''
+  script_name="link_file()"
 
   # Do $source and $target look like valid paths? If not then return 1.
   if [ ! -e "$source" ]; then
@@ -110,13 +117,13 @@ link_file () {
 
       if [ -h "$target" ]; then
         # Target is a link. What's it point to?
-        local currentSrc="$(readlink $target)"
+        currentSrc="$(readlink "$target")"
       else
-        local currentSrc=
+        currentSrc=''
       fi
 
       # If $target is already a link to $shortsource then then assume "[s]kip".
-      if [ ! -z "$currentSrc" ] && [ "$currentSrc" = "$shortsource" ]; then
+      if [ -n "$currentSrc" ] && [ "$currentSrc" = "$shortsource" ]; then
         skip="true";
       else
 
@@ -126,7 +133,7 @@ link_file () {
         # TODO: Validate input here.
 
         user "[s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
-        read action
+        read -r action
 
         case "$action" in
           o )

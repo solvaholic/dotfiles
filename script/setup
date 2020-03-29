@@ -1,31 +1,24 @@
-#   setup:
+#!/bin/sh
+
+#
+# Use these scripts to setup and develop the dotfiles in this repository.
+#
+# - script/setup:
+#
 #     - Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
 #     - Run under $DOTFILES_SHELL, unless it's set to "current".
 #     - For each topic, run setup if it exists or just link files.
-
-# Make sure we can tell where we are.
-# $0 should be this script, and it should be executable.
-if [ ! -x "$0" ] || [ ! -x "${0%/*}" ]; then
-  echo -e "\n\nHow did you get here?\n\n\$0 is '$0'.\n\n"
-  exit 1
-fi
+#
+# Usage:
+#   ./script/setup
+#
 
 # Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
-if [ -r ~/.dotfiles.conf ] && . ~/.dotfiles.conf && [ -x "$DOTFILES_ROOT" ]; then
-  # Found and loaded ~/.dotfiles.conf OK.
-  if . "$DOTFILES_ROOT/dotfiles.sh"; then
-    # Found and ran dotfiles.sh OK.
-    debug "$0: Loaded ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh OK."
-  else
-    echo -e "\n\nMissing $DOTFILES_ROOT/dotfiles.sh"
-    echo -e "Please check your dotfiles installation.\n\n"
-    exit 1
-  fi
-else
-  echo -e "\n\nMissing ~/.dotfiles.conf"
-  echo -e "Please run dotfiles/script/bootstrap\n\n"
-  exit 1
-fi
+# shellcheck disable=SC1090
+. ~/.dotfiles.conf || exit
+. "$DOTFILES_ROOT/dotfiles.sh" || exit
+debug "$0: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
+
 
 # Run under $DOTFILES_SHELL, unless it's set to "current".
 if [ -z "$DOTFILES_EXEC" ] && [ "$DOTFILES_SHELL" != "current" ]; then
@@ -35,28 +28,31 @@ if [ -z "$DOTFILES_EXEC" ] && [ "$DOTFILES_SHELL" != "current" ]; then
   exec "$DOTFILES_SHELL" -c "DOTFILES_EXEC=$DOTFILES_SHELL $0"
 fi
 
+
 # For each topic, run setup if it exists or just link files.
 debug "$0: Entering topics setup..."
-mytopics="$(find -H "$DOTFILES_ROOT" -maxdepth 3 \
+cd "$DOTFILES_ROOT" || exit
+mytopics="$(find -H . -maxdepth 3 \
 ! -path "*/.git/*" ! -path "*/script/*" -name setup -o -name "*.symlink" \
-| cut -d/ -f5 | sort -u)"
+| cut -d/ -f2 | sort -u)"
 
-debug "$0: Found topics '$(echo $mytopics)'."
+debug "$0: Found topics: $mytopics"
 
 # We need these 3, for when we call link_file().
+# shellcheck disable=SC2034
 overwrite_all="false" backup_all="false" skip_all="false"
 
 for thistopic in $mytopics; do
   info "Setting up topic '$thistopic'..."
-  if [ -r $DOTFILES_ROOT/$thistopic/setup ]; then
-    debug "$0: '. \"$DOTFILES_ROOT/$thistopic/setup\"'"
-    . "$DOTFILES_ROOT/$thistopic/setup"
+  if [ -r "$DOTFILES_ROOT/$thistopic/setup" ]; then
+    debug "$0: $DOTFILES_ROOT/$thistopic/setup"
+    "$DOTFILES_ROOT/$thistopic/setup"
     myresult=$?
   else
     # $thistopic has no setup, so just link its *.symlink files.
-    # TODO: Fix this so it'll handle filenames that have spaces.
     mysymlinks="$(find -H "$DOTFILES_ROOT/$thistopic" -maxdepth 2 -name '*.symlink' ! -path '*/.git*')"
-    debug "$0: Found files to link: '$(echo $mysymlinks)'."
+    debug "$0: Found files to link: $mysymlinks"
+    # TODO: Fix this so it'll handle filenames with spaces.
     for source in $mysymlinks; do
       target="$HOME/.$(basename "${source%.*}")"
       debug "$0: 'link_file \"$source\" \"$target\"'"
