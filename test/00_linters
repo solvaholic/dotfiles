@@ -24,8 +24,5 @@ shellcheck -x ${_files}
 
 
 echo "=== yamllint ==="
-[ -n "$(command -v yamllint)" ] || {
-  pip3 install -U pip3 setuptools
-  pip3 install yamllint
-}
+[ -n "$(command -v yamllint)" ] || pip install yamllint
 yamllint .github/workflows/*.yml
