@@ -10,18 +10,19 @@
 #
 
 # Change directory to the root of this repository.
-cd "$(git rev-parse --show-toplevel)" || return
+cd "$(git rev-parse --show-toplevel)" || exit
+
 
 echo "=== Shellcheck ==="
+[ -n "$(command -v shellcheck)" ] || exit
 _files="*/*.sh \
 */setup \
 script/* \
 test/*"
-
 # shellcheck disable=SC2086
-shellcheck -x dotfiles.sh ${_files}
+shellcheck -x ${_files}
+
 
 echo "=== yamllint ==="
-# TODO: Figure out how to lint YAML on GitHub-hosted runners.
-#       Relevant doc: https://git.io/Jv7ZE
-[ -n "$GITHUB_WORKSPACE" ] || yamllint .github/workflows/*.yml
+[ -n "$(command -v yamllint)" ] || pip3 install yamllint
+yamllint .github/workflows/*.yml
