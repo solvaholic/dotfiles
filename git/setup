@@ -1,23 +1,46 @@
-# This script is not meant to be executed directly.
-# Run dotfiles/script/setup.
+#!/bin/sh
 #
-#   git/setup:
-#     - Assume we have Git, because script/bootstrap requires it.
+# This script is not meant to be executed directly.
+# Run dotfiles' script/setup instead.
+#
+# - git/setup: Assert some Git client configuration.
+#
+#     - Make sure we have Git.
 #     - Create .gitconfig.local, if it doesn't exist.
 #     - Link files named *.symlink.
+#
+
+
+# Do we have dotshell env variables? If not, exit.
+[ -z "$DOTFILES_ROOT" ] || exit
+
 
 mytopic=git
 myname=git/setup
 
+
 debug "Entering '$mytopic' setup..."
+
+#
+# Make sure we have Git.
+#
+[ -x "$(command -v git)" ] || return
+
 
 #
 # Create .gitconfig.local, if it doesn't exist.
 #
+# - We have a gitconfig.local.symlink.
+# - [WIN] We have Git Credential Manager.
+# - Git credential.helper is set.
+# - Git username, authorname, and email are set.
+#
+
+#
 if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
 
   debug "$myname: uname -r is \"$(uname -r)\"."
-  if [ "$DOTFILES_OS" = "Linux" ] && grep Microsoft$ <(uname -r); then
+  if [ "$DOTFILES_OS" = "Linux" ] && uname -r | grep -q Microsoft$; then
   # If we're on Linux on WSL then use Git Credential Manager.
     if [ ! -x ~/.local/gcmw/git-credential-manager.exe ]; then
       info "Installing Git Credential Manager in WSL."
@@ -55,10 +78,10 @@ if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
 
   user 'What is your GitHub username?'
   printf "     ==> "
-  read git_username
+  read -r git_username
   user 'What is your GitHub author name?'
   printf "     ==> "
-  read git_authorname
+  read -r git_authorname
 
   # user ' - What is your GitHub author email?'
   # read -e git_authoremail
@@ -75,13 +98,16 @@ if [ ! -f "$DOTFILES_ROOT/git/gitconfig.local.symlink" ]; then
 
 fi
 
+
 #
 # Link files named *.symlink.
 #
+
 mysymlinks="$(find -H "$DOTFILES_ROOT/git" -maxdepth 2 -name '*.symlink' ! -path '*/.git*')"
-debug "git/setup: Found files to link: '$(echo $mysymlinks)'."
+debug "git/setup: Found files to link: ${mysymlinks}."
 
 # We need these 3, for when we call link_file().
+# shellcheck disable=SC2034
 overwrite_all="false" backup_all="false" skip_all="false"
 
 for source in $mysymlinks; do
