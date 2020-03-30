@@ -1,11 +1,15 @@
+#!/bin/sh
+#
 # This script is not meant to be executed directly.
-# Run dotfiles/script/setup.
+# Run dotfiles' script/setup instead.
 #
 #   wsl/setup:
+#
 #     - Assume we have Git, because script/bootstrap requires it.
 #     - Verify user's sudo access.
 #     - Make sure we're running on WSL.
 #     - Install wsl.conf.
+#
 
 mytopic=wsl
 myname=wsl/setup
