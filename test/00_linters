@@ -14,7 +14,7 @@ cd "$(git rev-parse --show-toplevel)" || exit
 
 
 echo "=== Shellcheck ==="
-[ -n "$(command -v shellcheck)" ] || exit
+[ -n "$(command -v shellcheck)" ] || sudo apt install -y shellcheck
 _files="*/*.sh \
 */setup \
 script/* \
@@ -24,5 +24,5 @@ shellcheck -x ${_files}
 
 
 echo "=== yamllint ==="
-[ -n "$(command -v yamllint)" ] || apt install yamllint
+[ -n "$(command -v yamllint)" ] || sudo apt install -y yamllint
 yamllint .github/workflows/*.yml
