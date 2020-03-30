@@ -18,6 +18,7 @@ _files="*/*.sh \
 script/* \
 test/*"
 
+# shellcheck disable=SC2086
 shellcheck -x dotfiles.sh ${_files}
 
 echo "=== yamllint ==="
