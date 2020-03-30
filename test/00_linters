@@ -22,4 +22,6 @@ test/*"
 shellcheck -x dotfiles.sh ${_files}
 
 echo "=== yamllint ==="
-yamllint .github/workflows/*.yml
+# TODO: Figure out how to lint YAML on GitHub-hosted runners.
+#       Relevant doc: https://git.io/Jv7ZE
+[ -n "$GITHUB_WORKSPACE" ] || yamllint .github/workflows/*.yml
