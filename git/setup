@@ -11,8 +11,15 @@
 #
 
 
+# Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
+# shellcheck disable=SC1090
+. ~/.dotfiles.conf || exit
+. "$DOTFILES_ROOT/dotfiles.sh" || exit
+debug "$0: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
+
+
 # Do we have dotshell env variables? If not, exit.
-[ -z "$DOTFILES_ROOT" ] || exit
+[ -n "$DOTFILES_ROOT" ] || exit
 
 
 mytopic=git
