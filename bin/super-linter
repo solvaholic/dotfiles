@@ -1,0 +1,25 @@
+#!/bin/sh
+
+#
+# Usage:
+#   "super-linter <directory>"
+#
+
+# shellcheck disable=SC1117
+
+_path="$1"
+
+if command -v docker >/dev/null && command -v realpath >/dev/null \
+&& [ -d "$_path" ] && [ -x "$_path" ]; then
+  echo " "
+  echo "Running github/super-linter..."
+  echo " "
+  docker run --rm \
+    -e RUN_LOCAL=true \
+    -v "$(realpath ./bin)":/tmp/lint:ro \
+    github/super-linter
+else
+  echo " "
+  echo "That did not work."
+  echo " "
+fi
