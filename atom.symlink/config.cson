@@ -27,10 +27,6 @@
       "atom-beautify"
     ]
     telemetryConsent: "no"
-    themes: [
-      "atom-light-ui"
-      "atom-light-syntax"
-    ]
     useProxySettingsWhenCallingApm: false
   editor:
     showIndentGuide: true
