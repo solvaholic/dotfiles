@@ -1,0 +1,128 @@
+#!/bin/sh
+
+#
+# Use this script to do some housekeeping when you sign on.
+#
+# Usage:
+#   "sign-on"
+#
+
+# shellcheck disable=SC1117
+
+_self="$0"
+
+main () {
+  check_preq || return 1
+  run_updates || return 1
+  pull_docker || return 1
+  # pull_repos
+  link_dirs || return 1
+}
+
+info () {
+  printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
+}
+
+user () {
+  printf "\r  [ \033[0;33m??\033[0m ] %s\n" "$1"
+}
+
+success () {
+  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
+}
+
+fail () {
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
+  echo ''
+}
+
+debug () {
+  if [ -n "$_DEBUG" ] && [ "$_DEBUG" -ne 0 ]; then
+    printf "\r  [ \033[0;33m==\033[0m ] %s\n" "$1" >&2
+  fi
+}
+
+link_dir () {
+  _lnksrc="$1"     # What the link links to
+  _lnktgt="$2"     # The link to create
+  _result=0
+  debug "$_self: START 'link_dir( $_lnksrc, $_lnktgt )'."
+  if [ -L "$_lnktgt" ]; then
+    debug "$_self: Link '$_lnktgt' already exists."
+  elif [ -e "$_lnktgt" ]; then
+    info "$_self: '$_lnktgt' already exists."
+  elif ln -s "$_lnksrc" "$_lnktgt"; then
+    success "$_self: Created link '$_lnktgt', to '$_lnksrc'."
+  else
+    fail "$_self: 'link_dir( $_lnksrc, $_lnktgt )' failed."
+    _result=1
+  fi
+  if [ ! -r "$_lnktgt" ]; then
+    info "$_self: '$_lnktgt' is not readable."
+  fi
+  debug "$_self: FINISH 'link_dir( $_lnksrc, $_lnktgt )'."
+  return $_result
+}
+
+check_preq () {
+  info "$_self: Check for prerequisites."
+  _result=0
+  for _cmd in id docker; do
+    command -v "$_cmd" || _result=$_result+1
+  done
+  # TODO: Check whether $HOME/Local is in $PATH.
+  return $_result
+}
+
+run_updates () {
+  info "$_self: Run OS and application updates."
+  _result=0
+  # macOS: softwareupdate
+  if command -v softwareupdate >/dev/null; then
+    info "$_self: Run 'softwareupdate -l'."
+    softwareupdate -l
+  fi
+  # macOS: Homebrew
+  if command -v brew >/dev/null; then
+    if [ -r ~/.dotfiles/Brewfile ]; then
+      info "$_self: Run 'brew bundle'."
+      brew bundle --file=~/.dotfiles/Brewfile || _result=$_result+1
+    else
+      info "$_self: Run 'brew upgrade'."
+      brew upgrade || _result=$_result+1
+      info "$_self: Run 'brew cask upgrade'."
+      brew cask upgrade || _result=$_result+1
+    fi
+  fi
+  # Debian-based: apt
+  # TODO: Find a more robust way to ID the package manager.
+  if command -v apt-get >/dev/null; then
+    info "$_self: Run 'sudo apt update'."
+    sudo apt update || _result=$_result+1
+    info "$_self: Run 'sudo apt upgrade'."
+    sudo apt upgrade || _result=$_result+1
+  fi
+  return $_result
+}
+
+pull_docker () {
+  info "$_self: Pulling Docker images."
+  _result=0
+  # TODO: Handle cases when $_repo will contain a field separator.
+  for _repo in $(docker image ls --format '{{ .Repository }}' | sort -u); do
+    docker pull "$_repo" || _result=$_result+1
+  done
+  return $_result
+}
+
+link_dirs () {
+  info "$_self: Linking directories."
+  mkdir -p ~/Local
+  link_dir "../.dotfiles/bin" ~/"Local/bin"
+  link_dir "Library/Mobile Documents/com~apple~CloudDocs" ~/"iCloud"
+}
+
+if ! main; then
+  echo "That did not work."
+  exit 1
+fi
