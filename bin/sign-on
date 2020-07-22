@@ -4,7 +4,7 @@
 # Use this script to do some housekeeping when you sign on.
 #
 # Usage:
-#   "sign-on"
+#   [_DEBUG=1] sign-on
 #
 
 # shellcheck disable=SC1117

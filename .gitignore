@@ -22,3 +22,5 @@ git/gitconfig.local.symlink
 **/.DS_Store
 
 .todos
+
+Brewfile.lock.json
