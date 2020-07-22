@@ -1,8 +1,11 @@
 cask_args appdir: '/Applications'
 
 tap 'homebrew/bundle'
+tap "homebrew/cask"
+tap "homebrew/core"
 
 brew 'awscli'
+brew "cmus"
 brew 'coreutils'
 brew 'exercism'
 brew 'exiftool'
@@ -31,7 +34,9 @@ cask 'docker'
 cask 'encryptme'
 cask 'keybase'
 cask 'lastpass'
+cask "minecraft"
 cask 'standard-notes'
 cask 'steam'
+cask "visual-studio-code"
 # cask 'wireshark'
 cask 'zoomus'
