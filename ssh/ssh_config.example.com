@@ -1,29 +1,22 @@
-# Modify and distribute this file through version control. Any
-# changes you make locally will be overwritten otherwise.
-
 # See `man ssh_config` for details and examples.
 
-# See also
-# https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/
-# and
-# http://nerderati.com/2011/03/17/simplify-your-life-with-an-ssh-config-file/
+# How to connect to bastion...
+Host bastion*.example.com remote.example.com
+  ForwardAgent yes
 
-# Global options
-AddKeysToAgent ask
-CanonicalizeHostname yes
-CanonicalizeFallbackLocal no
-CanonicalDomains example.com
-StrictHostKeyChecking ask
-VerifyHostKeyDNS ask
+# Proxy example.com hosts through bastion...
+Host example.com *.example.com !bastion*.example.com !remote.example.com
+  ProxyCommand ssh bastion.example.com nc %h %p
+  ForwardAgent no
 
-# ForwardAgent may be useful on proxies and some hosts.
-# HostName specifies which host to actually log into.
-# Also check out LocalCommand, PermitLocalCommand, ProxyCommand,
-#   ProxyJump, RemoteCommand
+# Log in as admin on test deploy app consoles.
+Host *.example.ion
+  User admin
+  Port 12121
+  ProxyCommand ssh bastion.example.com nc %h %p
+  ForwardAgent no
+  UserKnownHostsFile /dev/null
 
-# Per-host options. Use "Host" or "Match" to describe each host.
-
-# Apply these options to example.com's hosts:
-Host *.example.com 192.168.0.0/24
-  StrictHostKeyChecking yes
-  UserKnownHostsFile ~/.ssh/known_hosts.example.com
+# Log in as root on .lab hosts.
+Host *.example.lab
+  User root
