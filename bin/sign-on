@@ -18,7 +18,7 @@ main () {
   pull_docker || _result=$_result+1
   # pull_repos || _result=$_result+1
   link_dirs || _result=$_result+1
-  return $(($_result))
+  return $((_result))
 }
 
 info () {
@@ -63,7 +63,7 @@ link_dir () {
     info "$_self: '$_lnktgt' is not readable."
   fi
   debug "$_self: FINISH 'link_dir( $_lnksrc, $_lnktgt )'."
-  return $(($_result))
+  return $((_result))
 }
 
 check_preq () {
@@ -73,7 +73,7 @@ check_preq () {
     command -v "$_cmd" || _result=$_result+1
   done
   # TODO: Check whether $HOME/Local is in $PATH.
-  return $(($_result))
+  return $((_result))
 }
 
 run_updates () {
@@ -103,7 +103,7 @@ run_updates () {
     info "$_self: Run 'sudo apt upgrade'."
     sudo apt upgrade || _result=$_result+1
   fi
-  return $(($_result))
+  return $((_result))
 }
 
 prune_docker () {
@@ -112,7 +112,7 @@ prune_docker () {
   docker image prune --force || _result=$_result+1
   docker volume prune --force || _result=$_result+1
   docker network prune --force || _result=$_result+1
-  return $(($_result))
+  return $((_result))
 }
 
 pull_docker () {
@@ -122,7 +122,7 @@ pull_docker () {
   for _repo in $(docker image ls --format '{{ .Repository }}' | sort -u); do
     docker pull --quiet "$_repo" || _result=$_result+1
   done
-  return $(($_result))
+  return $((_result))
 }
 
 link_dirs () {
@@ -131,7 +131,7 @@ link_dirs () {
   mkdir -p ~/Local
   link_dir "../.dotfiles/bin" ~/"Local/bin" || _result=$_result+1
   link_dir "Library/Mobile Documents/com~apple~CloudDocs" ~/"iCloud" || _result=$_result+1
-  return $(($_result))
+  return $((_result))
 }
 
 if ! main; then

@@ -16,7 +16,7 @@ if command -v docker >/dev/null && command -v realpath >/dev/null \
   echo " "
   docker run --rm \
     -e RUN_LOCAL=true \
-    -v "$(realpath ./bin)":/tmp/lint:ro \
+    -v "$(realpath "$_path")":/tmp/lint:ro \
     github/super-linter
 else
   echo " "
