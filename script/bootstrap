@@ -17,13 +17,11 @@
 #   ./script/bootstrap
 #
 
-# TODO: Stop using echo -e. Some /bin/sh, like Debian's, don't use it.
-
 # Make sure we can tell where we are.
 # $0 should be this script, and it should be executable.
 if [ ! -x "$0" ] || [ ! -x "${0%/*}" ]; then
   echo "FAIL: How did I get here?"
-  echo "FAIL: $0 is '$0'."
+  echo "FAIL: \$0 is '$0'."
   exit 1
 fi
 
@@ -118,13 +116,15 @@ fi
 
 
 # Make sure we have the commands we'll need.
-# TODO: What other prerequisites should we check for?
+# TODO: What other prerequisites should bootstrap check for?
+
+_result=0
 
 if _cmd=$(command -v docker || command -v docker.exe); then
   debug "$0: Found '${_cmd##*/}' OK."
 else
   fail "Did not find 'docker' or 'docker.exe'. Fix that, and try again."
-  exit 1
+  _result=$((_result + 1))
 fi
 
 for _cmd in git unzip curl mktemp realpath; do
@@ -133,11 +133,11 @@ for _cmd in git unzip curl mktemp realpath; do
     debug "$0: Found '${_cmd}' OK."
   else
     fail "Did not find '${_cmd}'. Fix that, and try again."
-    exit 1
+    _result=$((_result + 1))
   fi
 
 done
 
 # If we made it this far then we think everything went OK.
 success "$0: Success."
-exit 0
+exit $((_result))
