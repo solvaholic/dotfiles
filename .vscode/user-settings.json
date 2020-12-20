@@ -1,0 +1,9 @@
+{
+    "workbench.startupEditor": "welcomePage",
+    "window.zoomLevel": 0,
+    "editor.fontFamily": "OpenDyslexicMono, Menlo, Monaco, 'Courier New', monospace",
+    "editor.wordWrapColumn": 70,
+    "editor.wordWrap": "wordWrapColumn",
+    "git.confirmSync": false,
+    "explorer.confirmDragAndDrop": false
+}
