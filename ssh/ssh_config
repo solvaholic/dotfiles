@@ -15,12 +15,12 @@ Host ec2-*.amazonaws.com
 # Add defaults below:
 Match all
 
-# Include custom options:
-Include ~/.ssh/ssh_config.example.com
+  # Include custom options:
+  Include ~/.ssh/ssh_config.home.winans.net
 
-# Set these, in case they haven't already been set:
-IdentityFile ~/.ssh/id_ed25519
-AddKeysToAgent ask
-StrictHostKeyChecking ask
-VerifyHostKeyDNS ask
-ConnectTimeout 30
+  # Set these, if they haven't already been set:
+  IdentityFile ~/.ssh/id_ed25519
+  AddKeysToAgent ask
+  StrictHostKeyChecking ask
+  VerifyHostKeyDNS ask
+  ConnectTimeout 30

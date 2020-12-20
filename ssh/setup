@@ -30,7 +30,7 @@ myname=ssh/setup
 debug "Entering '$mytopic' setup..."
 
 #
-# Make sure we have SSH.
+# Make sure ssh(1) is available.
 #
 if [ -x "$(command -v ssh)" ]; then
   debug "$myname: Found ssh(1) OK."
@@ -47,10 +47,10 @@ if mkdir -p ~/.ssh && chmod go-w ~/.ssh; then
   debug "$myname: ~/.ssh exists and is only writeable by user."
 fi
 if [ -r ~/.ssh/config ]; then
-  # We already have ~/.ssh/config.
-  info "You already have a ~/.ssh/config."
+  # ~/.ssh/config already exists.
+  info "$myname: ~/.ssh/config already exists."
 else
-  # Copy up our basic ssh_config.
+  # Copy basic ssh_config.
   if cp "$DOTFILES_ROOT/ssh/ssh_config" ~/.ssh/config; then
     info "$myname: Installed ~/.ssh/config."
   else
@@ -58,7 +58,7 @@ else
   fi
 fi
 if grep ^Include ~/.ssh/config > /dev/null; then
-  info "Here are the Includes, in your ~/.ssh/config:"
+  info "Here are the Includes, in ~/.ssh/config:"
   grep ^Include ~/.ssh/config | while read -r line; do
     info "    $line"
   done
