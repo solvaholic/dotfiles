@@ -4,7 +4,7 @@ Your dotfiles are how you personalize your system. These are mine.
 
 Day-to-day I use one login on one laptop. Occasionally I spin up a VM or container for a project, or I need to set up a new laptop to work on. So I wanted a way to version control my dotfiles and to share them across different systems I use.
 
-After trying feebly to solve that myself I remembered: Someone else has probably already solved it. A search and a click led me to https://dotfiles.github.io/ and from there I found [@holman's dotfiles](https://github.com/holman/dotfiles).
+After trying feebly to solve that myself I remembered: Someone else has probably already solved it. A search and a click led me to <https://dotfiles.github.io/> and from there I found [@holman's dotfiles](https://github.com/holman/dotfiles).
 
 I like @holman's modular organization and ease-of-use. And [their narrative about sharing dotfiles](http://zachholman.com/2010/08/dotfiles-are-meant-to-be-forked/) makes my :heart: feel good. So here we are.
 
@@ -21,7 +21,7 @@ symlinked without extension into `$HOME` when you run `script/setup`.
 
 Alternatively you can write a setup script for your topic, like `java/setup`. Then `script/setup` will run your script instead of linking your files.
 
-## What's inside?
+## What's inside
 
 A lot of stuff. Seriously, a lot of stuff. Check them out and see what components may mesh up with you.
 

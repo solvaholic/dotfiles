@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD041 MD034 -->
 The MIT License
 
 Copyright (c) Roger D. Winans, http://solvaholic.com
