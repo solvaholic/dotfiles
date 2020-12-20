@@ -22,7 +22,7 @@ debug "$0: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
 
 # Run bootstrap and setup scripts.
 
-debug "$0: $DOTFILES_ROOT/script/bootstrap > /dev/null"
+debug "$0: $DOTFILES_ROOT/script/bootstrap"
 "$DOTFILES_ROOT/script/bootstrap" || (fail "Bootstrap failed."; exit)
 debug "$0: $DOTFILES_ROOT/script/setup"
 "$DOTFILES_ROOT/script/setup" || (fail "Setup failed."; exit)

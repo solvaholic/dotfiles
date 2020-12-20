@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Use these scripts to setup and develop the dotfiles in this repository.
+# Define re-usable functions for dotfiles shell scripts.
 #
 # - dotfiles.sh: Define variables and functions for dotfiles scripts.
 #
@@ -12,7 +12,7 @@
 # typically ~/.dotfiles.
 #
 
-# Define some reusable functions.
+# Define some output functions.
 
 info () {
   printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"

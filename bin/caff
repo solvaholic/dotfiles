@@ -1,0 +1,22 @@
+#!/bin/sh
+
+#
+# Usage:
+#   "caff < number of hours | command >"
+#
+
+# shellcheck disable=SC2039
+
+_caff () {
+  if command -v "$1"; then
+    echo "Run 'caffeinate -disu $1'..."
+    caffeinate -disu "$1"
+  else
+    declare -i _num="${1%.*}" || return 1
+    _num=$((60*60*_num))
+    echo "Run 'caffeinate -disu sleep $_num'..."
+    caffeinate -disu sleep "$_num"
+  fi
+}
+
+_caff "$1"
