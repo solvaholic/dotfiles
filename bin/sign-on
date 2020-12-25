@@ -21,9 +21,10 @@ _self="${0##*/}"
 
 main () {
   check_preq || return 1
-  run_updates || _result=$_result+1
-  prune_docker || _result=$_result+1
-  pull_docker || _result=$_result+1
+  # run_updates || _result=$_result+1
+  # prune_docker || _result=$_result+1
+  # pull_docker || _result=$_result+1
+  _mux -s dotfiles -w docker "$DOTFILES_ROOT/bin/docker-clean"
   # pull_repos || _result=$_result+1
   link_dirs || _result=$_result+1
   return $((_result))
@@ -34,7 +35,7 @@ check_preq () {
   info "$_self: Check for prerequisites."
   _result=0
   # COMMANDS
-  for _cmd in id docker; do
+  for _cmd in id docker _mux; do
     if command -v "$_cmd"; then
       debug "$_self: check_preq() found command '$_cmd' OK."
     else
@@ -55,54 +56,6 @@ check_preq () {
   return $((_result))
 }
 
-run_updates () {
-  info "$_self: Run OS and application updates."
-  _result=0
-  # macOS: softwareupdate
-  if command -v softwareupdate >/dev/null; then
-    info "$_self: Run 'softwareupdate -l'."
-    softwareupdate -l
-  fi
-  # macOS: Homebrew
-  if command -v brew >/dev/null; then
-    info "$_self: Run 'brew upgrade'."
-    brew upgrade --quiet --ignore-pinned || _result=$_result+1
-    info "$_self: Run 'brew cask upgrade'."
-    brew upgrade --quiet --cask || _result=$_result+1
-    if [ -r ~/.dotfiles/Brewfile ]; then
-      info "$_self: Run 'brew bundle'."
-      brew bundle --file=~/.dotfiles/Brewfile || _result=$_result+1
-    fi
-  fi
-  # Debian-based: apt
-  # TODO: Find a more robust way to ID the package manager.
-  if command -v apt-get >/dev/null; then
-    info "$_self: Run 'sudo apt update'."
-    sudo apt update || _result=$_result+1
-    info "$_self: Run 'sudo apt upgrade'."
-    sudo apt upgrade || _result=$_result+1
-  fi
-  return $((_result))
-}
-
-prune_docker () {
-  info "$_self: Pruning Docker images, volumes, and networks."
-  _result=0
-  docker image prune --force || _result=$_result+1
-  docker volume prune --force || _result=$_result+1
-  docker network prune --force || _result=$_result+1
-  return $((_result))
-}
-
-pull_docker () {
-  info "$_self: Pulling Docker images."
-  _result=0
-  # TODO: Handle cases when $_repo will contain a field separator.
-  for _repo in $(docker image ls --format '{{ .Repository }}' | sort -u); do
-    docker pull --quiet "$_repo" || _result=$_result+1
-  done
-  return $((_result))
-}
 
 link_dir () {
   # TODO: Can link_file() from $DOTFILES_ROOT/dotfiles.sh handle

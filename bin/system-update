@@ -1,0 +1,55 @@
+#!/bin/sh
+
+#
+# Use this script to install and update software.
+#
+# Usage:
+#   [DEBUG=1] system-update
+
+# Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
+# shellcheck disable=SC1090
+. ~/.dotfiles.conf || exit
+. "$DOTFILES_ROOT/dotfiles.sh" || exit
+debug "$0: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
+
+_self="${0##*/}"
+
+main () {
+  run_updates || _result=$_result+1
+  return $((_result))
+}
+
+run_updates () {
+  info "$_self: Run OS and application updates."
+  _result=0
+  # macOS: softwareupdate
+  if command -v softwareupdate >/dev/null; then
+    info "$_self: Run 'softwareupdate -l'."
+    _mux softwareupdate -l
+  fi
+  # macOS: Homebrew
+  if command -v brew >/dev/null; then
+    info "$_self: Run 'brew upgrade'."
+    brew upgrade --quiet --ignore-pinned || _result=$_result+1
+    info "$_self: Run 'brew cask upgrade'."
+    brew upgrade --quiet --cask || _result=$_result+1
+    if [ -r ~/.dotfiles/Brewfile ]; then
+      info "$_self: Run 'brew bundle'."
+      brew bundle --file=~/.dotfiles/Brewfile || _result=$_result+1
+    fi
+  fi
+  # Debian-based: apt
+  # TODO: Find a more robust way to ID the package manager.
+  if command -v apt-get >/dev/null; then
+    info "$_self: Run 'sudo apt update'."
+    sudo apt update || _result=$_result+1
+    info "$_self: Run 'sudo apt upgrade'."
+    sudo apt upgrade || _result=$_result+1
+  fi
+  return $((_result))
+}
+
+if ! main; then
+  echo "That did not work."
+  exit 1
+fi
