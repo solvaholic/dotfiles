@@ -1,0 +1,72 @@
+#!/bin/sh
+
+#
+# Usage:
+#   "_mux [-s <session>] [-w <window>] [-i] <command>"
+#
+
+_usage () {
+  # _usage [<exit code>]
+  _result=${1:-0}
+  printf "\n%s\n\n" "$(sed -n -E 's/^# (.+)$/\1/p' "$0")"
+  exit "$_result"
+}
+
+_mux () {
+  _session=       # Name the session for this _command
+  _window=        # Name the new window for this _command
+  _command=       # Command, options, and arguments to run
+  _interact=      # Run in non-interactively, by default
+
+  # Parse the provided options
+  while [ $# -gt 0 ]; do
+    case ${1} in
+      -h|--help) _usage 0;;
+      -s|--session) _session="${2}"; shift 2;;
+      -w|--window) _window="${2}"; shift 2;;
+      -i|--interact) _interact="Yes"; shift 1;;
+      *)  _command=$1
+          if command -v "$_command" >/dev/null; then
+            _command=$*
+            shift $#
+          else
+            printf "\nFAIL: '%s' is not a valid command\n" "$_command"
+            _usage 1
+          fi;;
+    esac
+  done
+
+  # Use "dotfiles" default session name
+  _session=${_session:-dotfiles}
+
+  # printf "session: %s\nwindow: %s\ncommand: %s\ninteract: %s\n" \
+  #   "${_session}" "${_window}" "${_command}" "${_interact}"
+
+  # If no _command specified, print usage and exit
+  [ -z "$_command" ] && _usage 0
+
+  # Create _session, if it does not exist
+  if ! tmux list-sessions | grep -q "^${_session}:"; then
+    tmux new-session -d -s "${_session}"
+  fi
+
+  # Run _command without checking it, like a savage
+  # shellcheck disable=SC2086
+  if [ -n "${_window}" ]; then
+    # _window is provided, so use it
+    if [ -n "${_interact}" ]; then
+      tmux new-window -t "${_session}" -n "${_window}" ${_command}
+    else
+      tmux new-window -d -t "${_session}" -n "${_window}" ${_command}
+    fi
+  else
+    # _window is not provided
+    if [ -n "${_interact}" ]; then
+      tmux new-window -t "${_session}" ${_command}
+    else
+      tmux new-window -d -t "${_session}" ${_command}
+    fi
+  fi
+}
+
+_mux "$@"
