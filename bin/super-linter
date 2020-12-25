@@ -16,7 +16,7 @@ if command -v docker >/dev/null && command -v realpath >/dev/null \
   echo " "
   # TODO: Find ways to honor .gitignore and validate JSON.
   docker run --rm \
-    -e VALIDATE_JSON=false \
+    -e VALIDATE_ENV=false \
     -e RUN_LOCAL=true \
     -v "$(realpath "$_path")":/tmp/lint:ro \
     github/super-linter
