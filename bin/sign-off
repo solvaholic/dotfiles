@@ -1,10 +1,10 @@
 #!/bin/sh
 
 #
-# Use this script to do some housekeeping when you sign on.
+# Use this script to do some housekeeping when you sign off.
 #
 # Usage:
-#   [DOTFILES_DEBUG=1] sign-on
+#   [DOTFILES_DEBUG=1] sign-off
 
 _self="${0##*/}"
 
@@ -21,34 +21,19 @@ main () {
   _result=0
   check_preq || return 1
 
-  # run_updates || _result=$_result+1
-
-  # Link 
-  link_dirs || _result=$_result+1
-
-  # Add SSH keys to agent (TODO: Fix for Linux?)
-  info "$_self: Running 'ssh-add' to add keys to agent."
-  ssh-add || _result=$_result+1
-
   # Prune and pull the Docker things
   info "$_self: Running 'docker-clean' to prune and pull Docker."
   _mux -s dotfiles -w docker "$DOTFILES_ROOT/bin/docker-clean" || \
       _result=$_result+1
-  
-  # TODO: What Git repo maintenance makes sense here?
-  # pull_repos || _result=$_result+1
+
+  # TODO: Clean up or warn about SSH sessions
+
+  # Remove SSH keys from agent (TODO: Fix for Linux?)
+  info "$_self: Running 'ssh-add -D' to remove keys from agent."
+  ssh-add -D || _result=$_result+1
 
   # TODO: What else?
 
-  return $((_result))
-}
-
-link_dirs () {
-  info "$_self: Linking directories."
-  _result=0
-  mkdir -p ~/Local
-  link_file "$DOTFILES_ROOT/bin" ~/"Local/bin" || _result=$_result+1
-  link_file "Library/Mobile Documents/com~apple~CloudDocs" ~/"iCloud" || _result=$_result+1
   return $((_result))
 }
 
