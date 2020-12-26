@@ -5,9 +5,19 @@
 #   "_mux [-s <session>] [-w <window>] [-i] <command>"
 #
 
+_self="${0##*/}"
+
+# Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
+# shellcheck disable=SC1090
+. ~/.dotfiles.conf || exit
+# shellcheck disable=SC1090
+. "$DOTFILES_ROOT/dotfiles.sh" || exit
+debug "$_self: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
+
 _usage () {
   # _usage [<exit code>]
   _result=${1:-0}
+  debug "$_self: _usage() was called. \$_result is '$_result'."
   printf "\n%s\n\n" "$(sed -n -E 's/^# (.+)$/\1/p' "$0")"
   exit "$_result"
 }
@@ -30,24 +40,25 @@ _mux () {
             _command=$*
             shift $#
           else
-            printf "\nFAIL: '%s' is not a valid command\n" "$_command"
+            fail "$_self: '$_command' is not a valid command."
             _usage 1
           fi;;
     esac
   done
 
   # Use "dotfiles" default session name
+  # TODO: Maybe abstract default to a variable in ~/.dotfiles.conf
   _session=${_session:-dotfiles}
 
-  # printf "session: %s\nwindow: %s\ncommand: %s\ninteract: %s\n" \
-  #   "${_session}" "${_window}" "${_command}" "${_interact}"
+  debug "$_self: session: '$_session', window: '$_window',"
+  debug "$_self: command: '$_command', interact: '$_interact'."
 
   # If no _command specified, print usage and exit
   [ -z "$_command" ] && _usage 0
 
   # Create _session, if it does not exist
-  if ! tmux list-sessions | grep -q "^${_session}:"; then
-    tmux new-session -d -s "${_session}"
+  if ! tmux has-session -t "$_session:"; then
+    tmux new-session -d -s "$_session"
   fi
 
   # Run _command without checking it, like a savage
@@ -65,6 +76,17 @@ _mux () {
       tmux new-window -t "${_session}" ${_command}
     else
       tmux new-window -d -t "${_session}" ${_command}
+    fi
+  fi
+
+  # Attach to _session, if _interact is set and TMUX is not
+  if [ -n "$_interact" ] && [ -z "$TMUX" ]; then
+    info "$_self: Interactive session requested"
+    info "$_self: Attaching to tmux session '$_session'.."
+    sleep 1
+    if ! tmux attach-session -t "$_session"; then
+      user "$_self: Run the following command to attach to your session:"
+      user "$_self:   tmux attach-session -t '$_session'"
     fi
   fi
 }
