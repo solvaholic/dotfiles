@@ -9,15 +9,15 @@
 # shellcheck disable=SC1117
 # shellcheck disable=SC2039
 
+_self="${0##*/}"
 
 # Load ~/.dotfiles.conf and $DOTFILES_ROOT/dotfiles.sh.
+# TODO: Figure out how not to disable SC1090
 # shellcheck disable=SC1090
 . ~/.dotfiles.conf || exit
+# shellcheck disable=SC1090
 . "$DOTFILES_ROOT/dotfiles.sh" || exit
-debug "$0: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
-
-
-_self="${0##*/}"
+debug "$_self: Loaded ~/.dotfiles.conf and ran $DOTFILES_ROOT/dotfiles.sh OK."
 
 main () {
   check_preq || return 1
@@ -30,63 +30,12 @@ main () {
   return $((_result))
 }
 
-
-check_preq () {
-  info "$_self: Check for prerequisites."
-  _result=0
-  # COMMANDS
-  for _cmd in id docker _mux; do
-    if command -v "$_cmd"; then
-      debug "$_self: check_preq() found command '$_cmd' OK."
-    else
-      fail "$_self: check_preq() did not find command '$_cmd'."
-      _result=$_result+1
-    fi
-  done
-  # PATH ELEMENTS
-  # shellcheck disable=SC2066
-  for _path in "$HOME/Local/bin"; do
-    if [[ ":$PATH:" = *":$_path:"* ]] ; then
-      debug "$_self: check_preq() found '$_path' in \$PATH OK."
-    else
-      fail "$_self: check_preq() did not find '$_path' in \$PATH."
-      _result=$_result+1
-    fi
-  done
-  return $((_result))
-}
-
-
-link_dir () {
-  # TODO: Can link_file() from $DOTFILES_ROOT/dotfiles.sh handle
-  # this?
-  _lnksrc="$1"     # What the link links to
-  _lnktgt="$2"     # The link to create
-  _result=0
-  debug "$_self: START 'link_dir( $_lnksrc, $_lnktgt )'."
-  if [ -L "$_lnktgt" ]; then
-    debug "$_self: Link '$_lnktgt' already exists."
-  elif [ -e "$_lnktgt" ]; then
-    info "$_self: '$_lnktgt' already exists."
-  elif ln -s "$_lnksrc" "$_lnktgt"; then
-    success "$_self: Created link '$_lnktgt', to '$_lnksrc'."
-  else
-    fail "$_self: 'link_dir( $_lnksrc, $_lnktgt )' failed."
-    _result=1
-  fi
-  if [ ! -r "$_lnktgt" ]; then
-    info "$_self: '$_lnktgt' is not readable."
-  fi
-  debug "$_self: FINISH 'link_dir( $_lnksrc, $_lnktgt )'."
-  return $((_result))
-}
-
 link_dirs () {
   info "$_self: Linking directories."
   _result=0
   mkdir -p ~/Local
-  link_dir "../.dotfiles/bin" ~/"Local/bin" || _result=$_result+1
-  link_dir "Library/Mobile Documents/com~apple~CloudDocs" ~/"iCloud" || _result=$_result+1
+  link_file "$DOTFILES_ROOT/bin" ~/"Local/bin" || _result=$_result+1
+  link_file "Library/Mobile Documents/com~apple~CloudDocs" ~/"iCloud" || _result=$_result+1
   return $((_result))
 }
 
