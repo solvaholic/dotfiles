@@ -8,17 +8,29 @@
 # shellcheck disable=SC1117
 
 _path="$1"
+_file=
 
-if command -v docker >/dev/null && command -v realpath >/dev/null \
-&& [ -d "$_path" ] && [ -x "$_path" ]; then
+if [ -d "${_path}" ] && [ -x "${_path}" ]; then
+  # _path is a directory, and it's executable
+  _file=
+elif [ -f "${_path}" ] && [ -r "${_path}" ]; then
+  # _path is a file and it's readable
+  _file="/$(basename "${_path}")"
+else
+  # _path is not right
+  printf "\nFAIL: Path is invalid, `%s`" "${_path}"
+  exit 1
+fi
+
+if command -v docker >/dev/null && command -v realpath >/dev/null; then
   echo " "
-  echo "Running github/super-linter..."
+  echo "Running github/super-linter on '${_path}'..."
   echo " "
   # TODO: Find ways to honor .gitignore and validate JSON.
   docker run --rm \
     -e VALIDATE_ENV=false \
     -e RUN_LOCAL=true \
-    -v "$(realpath "$_path")":/tmp/lint:ro \
+    -v "$(realpath "$_path")":"/tmp/lint${_file}":ro \
     github/super-linter
 else
   echo " "
